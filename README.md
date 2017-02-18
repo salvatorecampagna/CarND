@@ -1,4 +1,4 @@
-#Udacity - Self-Driving Cars Engineering Nanodegree#
+#Udacity - Self-Driving Car Engineer Nanodegree#
 
-Student: Salvatore Campagna
-e-mail: _salvatorecampagna@gmail.com_
+Student: Salvatore Campagna  
+e-mail: _salvatorecampagna@gmail.com_  
