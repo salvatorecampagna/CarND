@@ -14,7 +14,7 @@ The goals / steps of this project are the following:
 [blur_image]: ./writeup_images/blur_image.jpg "Gaussian smoothing"
 [canny_image]: ./writeup_images/canny_image.jpg "Canny Edge Detection"
 [masked_image]: ./writeup_images/masked_image.jpg "Region of Interest"
-[line_image]: ./writeup_iamges/line_image.jpg "Hough Transform"
+[line_image]: ./writeup_images/line_image.jpg "Hough Transform"
 [weighted_image]: ./writeup_images/weighted_image.jpg "Final image"
 
 ---
