@@ -244,25 +244,25 @@ def process_image(image):
     weighted_image = weighted_img(line_image, image)
     return weighted_image
 
+def image_lanes(test_image):
+    print("Processing image: {0}".format(test_image))
+    image = mpimg.imread("test_images/" + test_image)
+    result_image = process_image(image)
+    result_filename = "output_images/" + test_image
+    print("Saving image: {0}".format(result_filename))
+    mpimg.imsave(result_filename, result_image)
+
+def video_lanes(input_file, output_file):
+    print("Processing video: {0}".format(input_file))
+    clip1 = VideoFileClip(input_file)
+    white_clip = clip1.fl_image(process_image)
+    white_clip.write_videofile(output_file, audio=False)
+    print("{0} video done".format(output_file))
+
 if __name__ == '__main__':
     test_images = get_test_images()
     for test_image in test_images:
-        print("Processing image: {0}".format(test_image))
-        image = mpimg.imread("test_images/" + test_image)
-        result_image = process_image(image)
-        result_filename = "output_images/" + test_image
-        print("Saving image: {0}".format(result_filename))
-        mpimg.imsave(result_filename, result_image)
+        image_lanes(test_image)
 
-    white_output = 'white.mp4'
-    print("Processing video: {0}".format(white_output))
-    clip1 = VideoFileClip("solidWhiteRight.mp4")
-    white_clip = clip1.fl_image(process_image)
-    white_clip.write_videofile(white_output, audio=False)
-    print("{0} video done".format(white_output))
-    yellow_output = 'yellow.mp4'
-    print("Processing video: {0}".format(yellow_output))
-    clip2 = VideoFileClip('solidYellowLeft.mp4')
-    yellow_clip = clip2.fl_image(process_image)
-    yellow_clip.write_videofile(yellow_output, audio=False)
-    print("{0} video done".format(yellow_output))
+    video_lanes("solidWhiteRight.mp4", "white.mp4")
+    video_lanes("solidYellowLeft.mp4", "yellow.mp4")
