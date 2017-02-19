@@ -266,3 +266,4 @@ if __name__ == '__main__':
 
     video_lanes("solidWhiteRight.mp4", "white.mp4")
     video_lanes("solidYellowLeft.mp4", "yellow.mp4")
+    video_lanes("challenge.mp4", "extra.mp4")
