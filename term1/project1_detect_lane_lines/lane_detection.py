@@ -36,20 +36,20 @@ def region_of_interest(img, vertices):
     Only keeps the region of the image defined by the polygon
     formed from `vertices`. The rest of the image is set to black.
     """
-    #defining a blank mask to start with
+    # Defining a blank mask to start with
     mask = np.zeros_like(img)   
     
-    #defining a 3 channel or 1 channel color to fill the mask with depending on the input image
+    # Defining a 3 channel or 1 channel color to fill the mask with depending on the input image
     if len(img.shape) > 2:
         channel_count = img.shape[2]  # i.e. 3 or 4 depending on your image
         ignore_mask_color = (255,) * channel_count
     else:
         ignore_mask_color = 255
         
-    #filling pixels inside the polygon defined by "vertices" with the fill color    
+    # Filling pixels inside the polygon defined by "vertices" with the fill color    
     cv2.fillPoly(mask, vertices, ignore_mask_color)
     
-    #returning the image only where mask pixels are nonzero
+    # Returning the image only where mask pixels are nonzero
     masked_image = cv2.bitwise_and(img, mask)
     return masked_image
 
@@ -80,6 +80,9 @@ def filter_out_horizontal_lines(lines, min_slope=0.2):
     return _lines
 
 def filter_left_right_lines(lines):
+    """
+    Separate lines in left and right lines by looking at the slope
+    """
     left_lines = list()
     right_lines = list()
     for line in lines:
@@ -209,6 +212,8 @@ def get_test_images(directory='test_images/'):
 def process_image(image):
     global y_top
     global y_bottom
+    ysize = image.shape[0]
+    xsize = image.shape[1]
     # Pipeline step 1
     # Convert the image to greyscale
     gray_image = grayscale(image)
@@ -220,8 +225,6 @@ def process_image(image):
     canny_image = canny(blur_image, low_threshold=50, high_threshold=150)
     # Pipeline step 4
     # Select region of interest
-    ysize = image.shape[0]
-    xsize = image.shape[1]
     y_bottom = ysize
     y_top = ysize - 0.38 * ysize
     left_bottom = [xsize - 0.89 * xsize, ysize]
@@ -230,20 +233,14 @@ def process_image(image):
     right_top = [xsize - 0.45 * xsize, y_top]
     vertices = np.array([left_bottom, left_top, right_top, right_bottom])
     masked_image = region_of_interest(canny_image, np.int32([vertices]))
-    # Piepline step 5
+    # Pipeline step 5
     # Apply Hough Trasform
     # Define Hough transform parameters
-    rho = 2
-    theta = np.pi/180
-    threshold = 20
-    min_line_length = 35
-    max_line_gap = 20
-    line_image = hough_lines(masked_image, rho, theta, threshold, min_line_length, max_line_gap)
+    line_image = hough_lines(img=masked_image, rho=2, theta=np.pi/180, threshold=20, min_line_len=35, max_line_gap=20)
     # Pipeline step 6
     # Put the original image and the lines one on top of the other
-    weighted_image = weighted_img(line_image, image)
-    return weighted_image
-
+    return weighted_img(line_image, image)
+    
 def image_lanes(test_image):
     print("Processing image: {0}".format(test_image))
     image = mpimg.imread("test_images/" + test_image)
