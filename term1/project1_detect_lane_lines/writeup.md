@@ -25,7 +25,7 @@ The goals / steps of this project are the following:
 
 My pipeline consisted of 6 steps. 
 First, I converted the images to grayscale. 
-![alt text][greyscale_image]
+![alt text][grayscale_image]
 Then I used Gaussian smoohing to reduce noise in the images. 
 ![alt text][blur_image]
 The third step is about using the Canny image detection algorithm to find 'object' boundaries in the images. 
