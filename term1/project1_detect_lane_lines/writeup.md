@@ -10,7 +10,7 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[greyscale_image]: ./writeup_images/grayscale_image.jpg "Grayscale"
+[grayscale_image]: ./writeup_images/grayscale_image.jpg "Grayscale"
 [blur_image]: ./writeup_images/blur_image.jpg "Gaussian smoothing"
 [canny_image]: ./writeup_images/canny_image.jpg "Canny Edge Detection"
 [masked_image]: ./writeup_images/masked_image.jpg "Region of Interest"
