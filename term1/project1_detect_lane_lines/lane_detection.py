@@ -217,15 +217,15 @@ def process_image(image):
     blur_image = gaussian_blur(gray_image, kernel_size=5)
     # Pipeline step 3
     # Apply Canny edge detection
-    canny_image = canny(gray_image, low_threshold=1, high_threshold=150)
+    canny_image = canny(blur_image, low_threshold=50, high_threshold=150)
     # Pipeline step 4
     # Select region of interest
     ysize = image.shape[0]
     xsize = image.shape[1]
     y_bottom = ysize
-    y_top = ysize - 0.40 * ysize
-    left_bottom = [0, ysize]
-    right_bottom = [xsize, ysize]
+    y_top = ysize - 0.38 * ysize
+    left_bottom = [xsize - 0.89 * xsize, ysize]
+    right_bottom = [xsize - 0.06 * xsize, ysize]
     left_top = [xsize - 0.55 * xsize, y_top]
     right_top = [xsize - 0.45 * xsize, y_top]
     vertices = np.array([left_bottom, left_top, right_top, right_bottom])
@@ -233,11 +233,11 @@ def process_image(image):
     # Piepline step 5
     # Apply Hough Trasform
     # Define Hough transform parameters
-    rho = 1
+    rho = 2
     theta = np.pi/180
-    threshold = 3
-    min_line_length = 40
-    max_line_gap = 5
+    threshold = 20
+    min_line_length = 35
+    max_line_gap = 20
     line_image = hough_lines(masked_image, rho, theta, threshold, min_line_length, max_line_gap)
     # Pipeline step 6
     # Put the original image and the lines one on top of the other
