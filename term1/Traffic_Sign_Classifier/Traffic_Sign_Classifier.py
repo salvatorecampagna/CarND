@@ -739,7 +739,7 @@ with tf.Session() as session:
 
 # ### Load and Output the Images
 
-# In[445]:
+# In[467]:
 
 ### Load the images and plot them here.
 ### Feel free to use as many code cells as needed.
@@ -773,7 +773,7 @@ print("gray_images shape: {}".format(gray_images.shape))
 
 # ### Predict the Sign Type for Each Image
 
-# In[446]:
+# In[468]:
 
 ### Run the predictions here and use the model to output the prediction for each image.
 ### Make sure to pre-process the images with the same pre-processing pipeline used earlier.
@@ -793,18 +793,18 @@ for sign_id in sign_ids:
 
 # ### Analyze Performance
 
-# In[447]:
+# In[470]:
 
 ### Calculate the accuracy for these 5 new images. 
 ### For example, if the model predicted 1 out of 5 signs correctly, it's 20% accurate on these new images.
 
 # Correct test image labels
-correct_labels = [4, 10, 38, 1, 25]
+correct_labels = [4, 10, 38, 1, 25, 17]
 # Compute accuracy as the ratio between correctly classified images and total number of images
 with tf.Session() as session:
     saver.restore(session, save_path)
     comp_pred = session.run(correct_prediction, feed_dict={x: gray_images, y: correct_labels, keep_prob: 1.0})
-    print("Accuracy: {0}%".format(sum(comp_pred==True) / comp_pred.shape[0] * 100))
+    print("Accuracy: {0:.2f}%".format(sum(comp_pred==True) / comp_pred.shape[0] * 100))
 
 
 # ### Output Top 5 Softmax Probabilities For Each Image Found on the Web
@@ -847,7 +847,7 @@ with tf.Session() as session:
 # 
 # Looking just at the first row we get `[ 0.34763842,  0.24879643,  0.12789202]`, you can confirm these are the 3 largest probabilities in `a`. You'll also notice `[3, 0, 5]` are the corresponding indices.
 
-# In[448]:
+# In[471]:
 
 ### Print out the top five softmax probabilities for the predictions on the German traffic sign images found on the web. 
 ### Feel free to use as many code cells as needed.
@@ -857,11 +857,11 @@ with tf.Session() as session:
 # Plot the original images and, for each, the top 5 predicted softmax probabilities
 plt.figure(figsize=(20, 20))
 for i in range(len(predicts[0])):
-    plt.subplot(5, 2, 2*i+1)
+    plt.subplot(6, 2, 2*i+1)
     plt.imshow(images[i])
     plt.title(signnames.loc[predicts[1][i][0]]['label'])
     plt.axis('off')
-    plt.subplot(5, 2, 2*i+2)
+    plt.subplot(6, 2, 2*i+2)
     plt.barh(np.arange(0, 5, 1), predicts[0][i])
     y_labels = [signnames.loc[i]['label'] for i in predicts[1][i]]
     plt.yticks(np.arange(0, 5, 1), y_labels)
@@ -888,7 +888,7 @@ plt.show()
 #  <p></p> 
 # 
 
-# In[449]:
+# In[472]:
 
 ### Visualize your network's feature maps here.
 ### Feel free to use as many code cells as needed.
