@@ -22,7 +22,7 @@
 # ---
 # ## Step 0: Load The Data
 
-# In[420]:
+# In[141]:
 
 # Load pickled data
 import pickle
@@ -53,6 +53,11 @@ X_train, y_train = train['features'], train['labels']
 X_valid, y_valid = valid['features'], valid['labels']
 X_test, y_test = test['features'], test['labels']
 
+
+# ## Train, test and validation set shapes
+
+# In[142]:
+
 print('X_train: {0}'.format(X_train.shape))
 print('y_train: {0}'.format(y_train.shape))
 print('X_valid: {0}'.format(X_valid.shape))
@@ -76,7 +81,7 @@ print('y_test: {0}'.format(y_test.shape))
 
 # ### Provide a Basic Summary of the Data Set Using Python, Numpy and/or Pandas
 
-# In[421]:
+# In[143]:
 
 ### Replace each question mark with the appropriate value. 
 ### Use python, pandas or numpy methods rather than hard coding the results
@@ -106,7 +111,10 @@ print("Number of classes =", n_classes)
 # 
 # **NOTE:** It's recommended you start with something simple first. If you wish to do more, come back to it after you've completed the rest of the sections.
 
-# In[422]:
+# ### Exploratory visualization
+# The following cell shows a set of ten images randomly selected from the training set.
+
+# In[144]:
 
 ### Data exploration visualization code goes here.
 ### Feel free to use as many code cells as needed.
@@ -115,7 +123,9 @@ get_ipython().magic('matplotlib inline')
 
 # Load traffic sign ids and labels in a Pandas dataframe
 signnames = pd.read_csv('signnames.csv', header=0)
+# Assign column names to Pandas dataframe
 signnames.columns = ['id', 'label']
+# Set the traffic sign id as the index of the dataframe
 signnames = signnames.set_index('id')
 
 # Show some saple images
@@ -130,22 +140,28 @@ for i in range(10):
     plt.show()
 
 
-# In[423]:
+# ### Traffic sign training set frequencies
+# The training dataset is skewed, different traffic signs in the training dataset have different frequencies. This can possibly affect the performances of the classifier for diffeent traffic signs. The expectation is that the classifier is better at classifing traffic signs whose frequecy of samples is higher. Expectation is also that the effectiveness of the traffic sign classifier could,, then, be improved for less frequent traffic signs using dataset augmentation techniques including, for instance, rotated images, flipped images, brighter/darker images or images with alternative sources of light.
+
+# In[145]:
 
 # Show traffic sign training set frequencies
 unique, counts = np.unique(y_train, return_counts=True)
 sign_freq = dict(zip(unique, counts))
 sign_freq = sorted(sign_freq.items(), key=lambda k: k[1], reverse=True)
-print("Id\tFrequency\tLabel")
+print("Traffic sign frequency table")
+print()
+print("ID\tFrequency\tLabel")
+print()
 for sign_id, sign_label in sign_freq:
     print("{0}\t{1}\t\t{2}".format(sign_id, sign_label, signnames.loc[sign_id]['label']))
 print("\n\n")
 
 # Traffic sign training set frequency histogram
 plt.hist(y_train, n_classes, orientation='horizontal')
-plt.title('Traffic sign frequency histogram')
-plt.xlabel('Frequency')
-plt.ylabel('Traffic sign id')
+plt.title("Traffic sign frequency histogram")
+plt.xlabel("Frequency")
+plt.ylabel("Traffic sign id")
 plt.grid(True)
 
 
@@ -172,33 +188,33 @@ plt.grid(True)
 
 # Use the code cell (or multiple code cells, if necessary) to implement the first step of your project.
 
-# In[424]:
+# In[146]:
 
 ### Preprocess the data here. Preprocessing steps could include normalization, converting to grayscale, etc.
 ### Feel free to use as many code cells as needed.
 
-# Normalize images using MinMax normlization
 def normalize(image_data, a=0.1, b=0.9):
     """
-    Normalize the image data with Min-Max scaling to a range of [0.1, 0.9]
-    :param image_data: The image data to be normalized
+    Normalize the image data with Min-Max scaling (default range [0.1, 0.9])
+    :param image_data: The image data to normalize
+    :param: a: Normalization lower bound
+    :param: b: Normalization upper bound
     :return: Normalized image data
     """
     return a + (image_data - image_data.min()) * (b - a) / (image_data.max() - image_data.min())
 
-# Convert an image from RGB to grayscale
 def rgb_to_gray_image(rgb_image):
     """
-    Convert an image from RGB to Grayscale
+    Convert an image from RGB to grayscale
     :param rgb_image: The RGB image to converto to grayscale
-    :return: Grayscale iamge
+    :return: Grayscale image
     """
     return cv2.cvtColor(rgb_image, cv2.COLOR_RGB2GRAY)
     
 def rgb_to_gray_images(rgb_images):
     """
-    Convert a set of images from RGB to Grayscale
-    :param: rgb_images: The list of images  convert to grayscale
+    Convert a set of images from RGB to grayscale
+    :param: rgb_images: The list of images to convert
     :return: A numpy array of images
     """
     images = []
@@ -207,34 +223,33 @@ def rgb_to_gray_images(rgb_images):
     
     return np.array(images)
 
-# Apply preprocessing to all images
 def preprocess_image(image):
     """
-    Apply all preprocessing to a single image
-    :param: image: The image to preprocess
-    :return: Preprocessed image
+    Preprocess a single image applying RGB to grayscale conversion and normalization
+    :param: image: The image to pre-process
+    :return: Pre-processed image
     """
     return normalize(rgb_to_gray_image(image))
 
 def preprocess_images(images):
     """
-    Apply all preprocessing to a set of images
-    :param: images: The list of images to preprocess
-    :return: A numpy array of images
+    Preprocess a set of images
+    :param: images: The list of images to pre-process
+    :return: A numpy array of pre-processed images
     """
     return normalize(rgb_to_gray_images(images))
 
-# Preprocess the training set
+# Preprocess the training set (labels don't need pre-processing)
 X_train_new = X_train
 y_train_new = y_train
 X_train_new = preprocess_images(X_train)
 
-# Preprocess the validation set
+# Preprocess the validation set (labels don't need pre-processing)
 X_valid_new = X_valid
 y_valid_new = y_valid
 X_valid_new = preprocess_images(X_valid)
 
-# Preprocess the test set
+# Preprocess the test set (labels don't need pre-processing)
 X_test_new = X_test
 y_test_new = y_test
 X_test_new = preprocess_images(X_test)
@@ -247,7 +262,12 @@ print("X_test_new shape: {0}".format(X_test_new.shape))
 print("y_test_new shape: {0}".format(y_test_new.shape))
 
 
-# In[425]:
+# ### Replace the original sets with pre-processed sets
+# Images have been pre-processed applying the following:
+# 1. **Conversion** from **RGB** to **Grayscale**: apparently colors do not convey useful information for classification. Neurons in different layers detect features like shapes, lines and contrast which are not related to the color itself of the traffic sign. Feeding the network with RGB images, instead of grayscale images, does not bring any improvement to the classification accuracy. Using grayscale images instead of RGB images also simplifies and speeds up the network training due to less amount of data to process.
+# 2. **Normalization** and **feature scaling**: this way gradient descent and similar optimization algorithms converge much faster to the optimal solution. In this scanario Min-Max scaling is used. Each image is scaled in such a way that  values range in the interval [0.1, 0.9].
+
+# In[147]:
 
 # Replace original training, validation and test set with preprocessed sets
 X_train = X_train_new
@@ -261,20 +281,18 @@ y_test = y_test_new
 X_train, y_train = shuffle(X_train, y_train)
 
 
-# In[426]:
+# ### Pre-processed image samples
 
-# Show some sample preprocessed images
-print("Sample preprocessed images")
+# In[148]:
+
+# Show some sample pre-processed images
+print("Sample pre-processed images")
 random.seed(42)
 for i in range(10):
     index = random.randint(1, n_train)
     plt.imshow(X_train[index])
     plt.title(signnames.loc[y_train[index]]['label'])
-    plt.show()# Reshape the training, validation and test set so to match the
-# input shape required by the model
-X_train = X_train.reshape(-1, 32, 32, 1)
-X_valid = X_valid.reshape(-1, 32, 32, 1)
-X_test = X_test.reshape(-1, 32, 32, 1)
+    plt.show()
 
 print("X_train shape: {0}".format(X_train.shape))
 print("y_train shape: {0}".format(y_train.shape))
@@ -284,7 +302,10 @@ print("X_test shape: {0}".format(X_test.shape))
 print("y_test shape: {0}".format(y_test.shape))
 
 
-# In[427]:
+# ### Training, test and validation sets preparation
+# The Convolutional Neural Network expects 32 x 32 grayscale input images (32 x 32 x 1). As a result the training, validation and test sets are reshaped accordingly.
+
+# In[149]:
 
 # Reshape the training, validation and test set so to match the
 # input shape required by the model (None, 32, 32, 1)
@@ -301,8 +322,57 @@ print("y_test shape: {0}".format(y_test.shape))
 
 
 # ### Model Architecture
+# The model architecture is made up by the following layers:
+# 
+# 1. Convolutional layer + ReLU activation  
+#    **Input**: 32 x 32 x 1 (H x W x D)  
+#    **Convolutional filter**: 6 filters, 3 x 3 (H x W), padding = 'VALID', strides = 1,1  
+#    **Output**: 30 x 30 x 6 (H x W x D)  
+#    **Parameters**: (3 x 3 x 1 + 1) x 6 = 60 (54 weights and 6 biases)  
+# 
+# 2. Convolutional layer + ReLU activation  
+#    **Input**: 30 x 30 x 6 (H x W x D)  
+#    **Convolutional filter**: 16 filters, 5 x 5 (H x W), padding = 'VALID', strides = 1,1  
+#    **Output**: 26 x 26 x 16 (H x W x D)    
+#    **Parameters**: (5 x 5 x 6 + 1) x 16 = 2416 (2400 weights and 16 biases)  
+# 
+# 3. Convolutional layer + ReLU activation + Max pooling  
+#    **Input**: 26 x 26 x 16 (H x W x D)  
+#    **Convolutional filter**: 32 filters, 5 x 5 (H x W), padding = 'VALID', strides = 1,1  
+#    **Output**: 22 x 22 x 32 (H x W x D)  
+#    **Parameters**: (5 x 5 x 16 + 1) x 32 = 12832 (12800 weights and 32 biases)  
+#    **Max pooling filter**: 121 filters, 2 x 2 (H x W), padding = 'VALID', strides = 2,2  
+#    **Output**: 11 x 11 x 32 (H x W x D)  
+#    **Parameters**: the max pooling layer does not introduce additional parameters  
+# 
+# 4. Flattening layer  
+#    **Input**: 11 x 11 x 32 (H x W x D)  
+#    **Output**: 1 x 3872 (each input feature map of shape 11 x 11 x 32 is flattened in a single array of 3872 elements)  
+#    **Parameters**: the flattening layer does not introduce additional parameters, it just reshapes a matrix into an array  
+# 
+# 5. Fully connected layer  
+#    **Input**: 1 x 3872  
+#    **Output**: 1 x 120  
+#    **Parameters**: (3872 + 1) x 120 = 464760 (464640 weights and 120 biases)  
+# 
+# 6. Dropout layer: inserted to counterbalance the absence of max pooling layers in layers 1 and 2 and to prevent overfitting  
+#    **Input**: 1 x 3872  
+#    **Output**: 1 x 120  
+#    **Parameters**: the dropout layer does not introduce additional parameters. Anyway, the probability of keeping a neuron during training of the network is set to 0.6. The same parameter is set to 1.0 during validation and testing in order to use the full network capability to evaluate the performance of the classifier  
+# 
+# 7. Fully connected layer  
+#    **Input**: 1 x 120  
+#    **Output**: 1 x 84  
+#    **Parameters**: (120 + 1) * 84 = 10164 (10080 weights and 84 biases)  
+# 
+# 8. Output layer  
+#    **Input**: 1 x 84  
+#    **Output**: 1 x 43 (43 different traffic sign classes)  
+#    **Parameters**: (84 + 1) * 43 = 3655 (3612 weights and 43 biases)  
+# 
+# **Total paremeters**: 493887 (493586 weights and 301 biases)
 
-# In[428]:
+# In[150]:
 
 ### Define your architecture here.
 ### Feel free to use as many code cells as needed.
@@ -420,7 +490,7 @@ print('y_pred: {0}'.format(y_pred.get_shape()))
 # A validation set can be used to assess how well the model is performing. A low accuracy on the training and validation
 # sets imply underfitting. A high accuracy on the training set but low accuracy on the validation set implies overfitting.
 
-# In[429]:
+# In[151]:
 
 def plot_data(train_data_loss, train_data_acc, val_data_loss, val_data_acc, epochs):
     """
@@ -429,7 +499,7 @@ def plot_data(train_data_loss, train_data_acc, val_data_loss, val_data_acc, epoc
     :param: train_data_acc: Training accuracy values
     :param: val_data_loss: Validation loss values
     :param: val_data_acc: Validation accuracy values
-    :param: epochs: training/validation epoch values
+    :param: epochs: training and validation epoch values
     """
     # Loss subplot
     fig, _ = plt.subplots()
@@ -454,7 +524,14 @@ def plot_data(train_data_loss, train_data_acc, val_data_loss, val_data_acc, epoc
     plt.show()
 
 
-# In[430]:
+# ### Convolutiona Neural Network training  
+# Hyperparameters:
+# 1. **Epochs**: 100
+# 2. **Batch size**: 160 samples
+# 3. **Learning rate**: 0.001
+# 4. **Training dropout keep probability**: 0.6
+
+# In[159]:
 
 ### Train your model here.
 ### Calculate and report the accuracy on the training and validation set.
@@ -569,13 +646,24 @@ with tf.Session() as session:
     saver.save(session, save_path)
 
 
-# In[431]:
+# ### Plotting training set and validation set loss and accuracy
+# Plotting the accuracy of the network on both the training set and the validation set allows us to check for overfitting. A network that is overfitting would tipically show good performances on the training set (high accuracy and low loss) and poor performances on the validation set (lower accuracy and higher loss compared to the training set). As a result, we can spot overfitting by looking at the graphs and searching for the moment when accuracy and loss on the training and validation set start diverging.
+# In the following graphs we can see that there is no such diverging pattern both in the loss and accuracy. This confirms that the network is not overfitting.
+
+# ### Train and validation loss and accuracy
+
+# In[160]:
 
 # Plot training and validation loss and accuracy
 plot_data(train_data_loss, train_data_acc, val_data_loss, val_data_acc, range(EPOCHS))
 
 
-# In[432]:
+# ### Network accuracy and loss on the test set
+# Evaluating the performance of the network in classifying images part of the test set, and as such never seen before, we see the classification accuracy is between 96% and 97%. For shorter training times, such as 20 or 50 epochs, the accuracy stays around 95%.
+# 
+# Anyway, overall (average) accuracy is not the only metric to consider when evaluating the performances of a classifier, especially if the training set is skewed as we have seen before. Moreover, in a multiclass classification problem like this one, the overall average performances of the classifier do not provide a good estimation of the classifier performances. Overall accuracy, is, as amatter of fact, the result of averaging the performances of the classifier while classifying images whose label is one the possible multiple output labels. Other metrics to take into account include measuring the **precision**, **recall** and **F1 score** of the classifier for each of the traffic sign classes.
+
+# In[161]:
 
 # Evaluate the model on test set
 with tf.Session() as session:
@@ -591,7 +679,10 @@ with tf.Session() as session:
     print()
 
 
-# In[433]:
+# ### Traffic sign classifier confusion matrix
+# When it comes to evaluating the performance of a (multiclass) classifier a **confusion matrix** is a good starting point. In this scenario I have used the functionality provided by **Scikit Learn** to compute the confusion matrix. Each column of the confusion matrix represents predicted classes (one for each of the possible 43 traffic sign classes) while each row represents actual classes (one for each of the possible 43 traffic sign classes). This results in the confusion matrix being a 43 x 43 matrix. The diagonal elements represent samples for which the classifier predicted label matches the actual label, while off-diagonal elements are those that are mislabeled by the classifier. The higher the diagonal values of the confusion matrix the better, indicating many correct predictions. In this case, since the number of samples varies for different classes, values reported by the confusion matrix have been normalized. Looking at diagonal elements we can see (as expected) that the classifier is better at classifying some traffic signs than others.
+
+# In[162]:
 
 from sklearn.metrics import confusion_matrix
 import itertools
@@ -601,14 +692,17 @@ def plot_confusion_matrix(cm, classes,
                           title='Confusion matrix',
                           cmap=plt.cm.Blues):
     """
-    Plot the confusion matrix of a classifier.
-    Normalization can be applied by setting `normalize=True`.
+    Plot the confusion matrix of a classifier
+    Normalization can be applied by setting `normalize=True`
     :param: cm: Confusion matrix
     :param: classes: List of class labels
     :param: normalize: Normalize the confusion matrix (True/False)
     :param: title: Plot title
     :param: cmap: Confusion matrix color map
     """
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)
+        
     plt.figure(figsize=(10, 10))
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)
@@ -616,10 +710,6 @@ def plot_confusion_matrix(cm, classes,
     tick_marks = np.arange(len(classes))
     plt.xticks(tick_marks, classes, rotation=45)
     plt.yticks(tick_marks, classes)
-
-    if normalize:
-        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-
     plt.tight_layout()
     plt.ylabel('Actual label')
     plt.xlabel('Predicted label')
@@ -630,14 +720,23 @@ with tf.Session() as session:
     # Compute predicted and actual labels using the test set
     pred, actual = session.run((tf.argmax(y_pred, 1), tf.argmax(y_one_hot, 1)), feed_dict={x: X_test, y: y_test, keep_prob: 1.0})
         
-    # Plot normalized confusion matrix
+    # Plot the normalized confusion matrix using traffic sign IDs as labels
+    labels = [i for i in range(0, 43)]
     conf_matrix = confusion_matrix(actual, pred, labels)
     class_names = [i for i in range(0, 43, 1)]
     plot_confusion_matrix(conf_matrix, classes=class_names, normalize=True,
-                      title='Normalized confusion matrix')
+                      title='Normalized traffic sign classifier confusion matrix')
 
 
-# In[434]:
+# ### Traffic sign classifier precision, recall and F1 score
+# When evaluating the performance of a multiclass classifier, computing the **precision**, **recall** and **F1 score** of the classifier, for each of che output classes, gives more information about how good the classifier is in classifying each of the different classes.
+# To be more precise, the **precision** of the classifier is intuitively the ability of the classifier not to label as positive a sample that is negative. So, a high precision value means the classifier has a low number of false positives. The **recall** is intuitively the ability of the classifier to find all the positive samples. So, a high recall value means the classifier has a low number of false negatives. The **F1 score** is a kind of weighted mean of the precision and recall and has its best score at 1 and worst score at 0.
+# 
+# As we can see below, the **precision**, **recall** and **F1 score** of the classifier in classifying different classes varies. This suggestes that using dataset augmentation for some of the traffic sign classes could potentially have benefits on the effectivness of the classifier. This would improve the performances of the classifier for the specific augmented class and its overall performance will improve as a consequence. This also suggests that there is no need to improve the performances of the classifier for some classes. In short, there is no need to apply data augmentation to the training set for the 'Stop' traffic sign, for instance, which has a **F1 score** of 1.00 (applying data augmentation to the 'Stop' traffic sign would likely result in wasting time).
+# 
+# For instance, the F1 score of the classifier in classifying the 'End of no passing' traffic sign is lower with respect to others. This suggests that, probably, applying data augmentation to the training set to augment the samples of  'End of no passing' traffic signs can improve the performance of the classifier in classifying this specific traffic sign and, as a consequence, improve the overall performance of the classifier.
+
+# In[163]:
 
 # Compute precision, recall, F1 score and support for each of the 43 traffic sign classes
 from sklearn.metrics import precision_recall_fscore_support
@@ -649,20 +748,22 @@ def list_to_dict(l):
     return d
 
 def list_to_table(l, title, reverse=False):
-    print(title)
+    print("{0} table".format(title))
     print()
     d = list_to_dict(l)
     table = sorted(d.items(), key=lambda k: k[1], reverse=reverse)
+    print("ID\t{0}\tLabel".format(title))
+    print()
     for i, label in table:
         print("{0}\t{1:.2f}\t\t{2}".format(i, label, signnames.loc[i]['label']))
     print("\n\n")
     return table
 
 precision, recall, fscore, support = precision_recall_fscore_support(actual, pred)
-precision_table = list_to_table(precision, "Precision table")
-recall_table = list_to_table(recall, "Recall table")
-fscore_table = list_to_table(fscore, "F1 score table")
-support_table = list_to_table(support, "Support table")
+precision_table = list_to_table(precision, "Precision")
+recall_table = list_to_table(recall, "Recall  ")
+fscore_table = list_to_table(fscore, "F1 score")
+support_table = list_to_table(support, "Support  ")
 
 # Select the 3 traffic signs whose F1 score is lower
 low_score_ids = []
@@ -684,7 +785,10 @@ for i in low_score_ids:
     print("{0}\t\t{1}".format(i,signnames.loc[i]['label']))
 
 
-# In[444]:
+# ### Evaluating the classifier against the classes whose F1 score is lower
+# In the following cell we evaluate the performance of the classifier in classifying the three traffic signs whose **F1 score** is lower. This gives an understanding of what kind of erros the classifier is experiancing and which traffic sign is taking for what.
+
+# In[165]:
 
 # Open the test set to extract the origina images
 with open(testing_file, mode='rb') as f:
@@ -695,8 +799,8 @@ with open(testing_file, mode='rb') as f:
     
 # Select 10 samples from the test set among the images whose classification accuracy is on average lowe
 # (see cell output above for a list of traffic signs whose classification accuracy is low)
-n_samples = 25
-random.seed(11)
+n_samples = 24
+random.seed(31)
 # Extract some random samples from the set of traffic signs whose classification accuracy is low
 test_samples = random.sample(low_score_samples, n_samples)
 # Load images and labels for the random samples
@@ -739,13 +843,16 @@ with tf.Session() as session:
 
 # ### Load and Output the Images
 
-# In[467]:
+# In[168]:
 
 ### Load the images and plot them here.
 ### Feel free to use as many code cells as needed.
 
 # Load images to test the model
 test_images = os.listdir('test_images/')
+n_test_images = len(test_images)
+print("Found {} test images".format(n_test_images))
+print()
 
 # Load test images as numpy arrays
 print("Original test images")
@@ -758,7 +865,7 @@ for img in test_images:
     plt.show()
 
 # Apply preprocessing to test images
-print("Preprocessed test images")
+print("Pre-processed test images")
 gray_images = preprocess_images(images)
 for gray_image in gray_images:
     plt.imshow(gray_image)
@@ -773,7 +880,7 @@ print("gray_images shape: {}".format(gray_images.shape))
 
 # ### Predict the Sign Type for Each Image
 
-# In[468]:
+# In[169]:
 
 ### Run the predictions here and use the model to output the prediction for each image.
 ### Make sure to pre-process the images with the same pre-processing pipeline used earlier.
@@ -785,21 +892,23 @@ with tf.Session() as session:
     sign_ids = session.run(tf.argmax(probabilities, axis=1))
 
 # Show predicted labels for the test images
-print("Id\tLabel")
-print()
-for sign_id in sign_ids:
-    print("{0}\t{1}".format(sign_id, signnames.loc[sign_id]['label']))
+for image, sign_id in zip(images, sign_ids):
+    plt.imshow(image)
+    plt.title(signnames.loc[sign_id]['label'])
+    plt.show()
 
 
 # ### Analyze Performance
 
-# In[470]:
+# In[170]:
 
 ### Calculate the accuracy for these 5 new images. 
 ### For example, if the model predicted 1 out of 5 signs correctly, it's 20% accurate on these new images.
 
 # Correct test image labels
-correct_labels = [4, 10, 38, 1, 25, 17]
+correct_labels = [21, 38, 17, 10, 25, 23, 1, 4]
+if len(correct_labels) != n_test_images:
+    print("Only {0} labels for {1} test images".format(len(correct_labels), n_test_images))
 # Compute accuracy as the ratio between correctly classified images and total number of images
 with tf.Session() as session:
     saver.restore(session, save_path)
@@ -847,7 +956,7 @@ with tf.Session() as session:
 # 
 # Looking just at the first row we get `[ 0.34763842,  0.24879643,  0.12789202]`, you can confirm these are the 3 largest probabilities in `a`. You'll also notice `[3, 0, 5]` are the corresponding indices.
 
-# In[471]:
+# In[171]:
 
 ### Print out the top five softmax probabilities for the predictions on the German traffic sign images found on the web. 
 ### Feel free to use as many code cells as needed.
@@ -857,11 +966,11 @@ with tf.Session() as session:
 # Plot the original images and, for each, the top 5 predicted softmax probabilities
 plt.figure(figsize=(20, 20))
 for i in range(len(predicts[0])):
-    plt.subplot(6, 2, 2*i+1)
+    plt.subplot(n_test_images, 2, 2*i+1)
     plt.imshow(images[i])
     plt.title(signnames.loc[predicts[1][i][0]]['label'])
     plt.axis('off')
-    plt.subplot(6, 2, 2*i+2)
+    plt.subplot(n_test_images, 2, 2*i+2)
     plt.barh(np.arange(0, 5, 1), predicts[0][i])
     y_labels = [signnames.loc[i]['label'] for i in predicts[1][i]]
     plt.yticks(np.arange(0, 5, 1), y_labels)
@@ -888,7 +997,7 @@ plt.show()
 #  <p></p> 
 # 
 
-# In[472]:
+# In[175]:
 
 ### Visualize your network's feature maps here.
 ### Feel free to use as many code cells as needed.
@@ -923,14 +1032,6 @@ with tf.Session() as session:
     for i in range(gray_images.shape[0]):
         outputFeatureMap([gray_images[i]], tf_activation=h_conv1, plt_num=10+i)
     
-    # Second convolutional layer feature maps
-    # for i in range(gray_images.shape[0]):
-    #    outputFeatureMap([gray_images[i]], tf_activation=h_conv2, plt_num=100+i)
-    
-    # Third convolutional layer feature maps
-    # for i in range(gray_images.shape[0]):
-    #     outputFeatureMap([gray_images[i]], tf_activation=h_conv3, plt_num=1000+i)
-    
 
 
 # ### Question 9
@@ -938,7 +1039,13 @@ with tf.Session() as session:
 # Discuss how you used the visual output of your trained network's feature maps to show that it had learned to look for interesting characteristics in traffic sign images
 # 
 
-# **Answer:**
+# **Answer:** as we can see from the images above the first convolutional layer feature maps concentrate on identifying different things such as lines in the border of the traffic sign, the shape of lines in the background or the contrast of the image. The interesting thing to note here is that, if RGB images are provided as input to the classifier, apparently, no layer is interested in the color of the traffic sign. This is also the reson why I decided to go on with grayscale images.
+# 
+# Looking at the first feature map labeled as 'FeatureMap 0", for instance, it looks like this set of neurons is looking at the borders of the traffic sign. Neurons activate on round shapes by round traffic signs such as 'Speed limit', 'Keep right' and 'No passing'.
+# 
+# Looking at the fifth feature map labeled as 'FeatureMap 6" it looks like this set of neurons is looking at the content in the central part of the image. While the last feature map, labeled 'FeatureMap 7' is probably looking at the contrast of the image. This suggest that suitable data transformations increasing the contrast of images could potentilly improve the performance of the classifier by improving the performance of the neurons making this feature map.
+# 
+# The same happens to other feature maps, each of them identifying different simple features. This matches with the idea that in a Convolutional Neural Network as we move towards upper layers from the first layer, neurons activate for increasingly complex shapes and features. The first layer, in this scenario, has neurons activating when detecting simple features such as lines going in different directions, round lines and contrast among different parts of the image. 
 
 # > **Note**: Once you have completed all of the code implementations and successfully answered each question above, you may finalize your work by exporting the iPython Notebook as an HTML document. You can do this by using the menu above and navigating to  \n",
 #     "**File -> Download as -> HTML (.html)**. Include the finished document along with this notebook as your submission.

@@ -1,2 +1,2 @@
-model_checkpoint_path: "C:\\Users\\Salvatore\\Documents\\Udacity_Self_Drivig_Cars\\udacity_carnd\\term1\\Traffic_Sign_Classifier\\classifier.ckpt"
-all_model_checkpoint_paths: "C:\\Users\\Salvatore\\Documents\\Udacity_Self_Drivig_Cars\\udacity_carnd\\term1\\Traffic_Sign_Classifier\\classifier.ckpt"
+model_checkpoint_path: "C:\\Users\\Salvatore\\Documents\\Udacity\\SDCND\\udacity_carnd\\term1\\project2_traffic_sign_classifier\\classifier.ckpt"
+all_model_checkpoint_paths: "C:\\Users\\Salvatore\\Documents\\Udacity\\SDCND\\udacity_carnd\\term1\\project2_traffic_sign_classifier\\classifier.ckpt"
