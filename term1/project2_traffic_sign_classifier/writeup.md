@@ -39,7 +39,7 @@ I used numpy to calculate summary statistics of the traffic signs data set:
 
 I used Pandas, at this stage, to load the table mapping traffic sign IDs to traffic sign labels. This way I have a table mapping, for instance, traffic sign ID 2 to label 'Speed limit (50km/h)' and so on.
 
-### 2. Include an exploratory visualization of the dataset and identify where the code is in your code file.
+***Include an exploratory visualization of the dataset and identify where the code is in your code file.***
 
 The Python code for this step is contained in the fifth code cell of the Jupyter notebook.
 
@@ -53,7 +53,7 @@ For this reason particular care is required when evaluating the performance of t
 
 ## Design and Test a Model Architecture
 
-### 1. Describe how, and identify where in your code, you preprocessed the image data. What tecniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc.
+***Describe how, and identify where in your code, you preprocessed the image data. What tecniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc.***
 
 The code for this step is contained in the sixth, seventh and eighth code cell of the Jupyter notebook.
 
@@ -67,13 +67,24 @@ Here is an example of a traffic sign image after grayscaling.
 
 ![alt text][no_vehicle_grayscale]
 
-### 2. Describe how, and identify where in your code, you set up training, validation and testing data. How much data was in each set? Explain what techniques were used to split the data into these sets. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, identify where in your code, and provide example images of the additional data)
+***Describe how, and identify where in your code, you set up training, validation and testing data. How much data was in each set? Explain what techniques were used to split the data into these sets. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, identify where in your code, and provide example images of the additional data)***
 
-Data is already split since the beginning in training, validation and test set so I didn't need to further split it. I used the provided training set, validation set and test set as they are. I just shuffled the training set before training the network to be sure to pick random batches at each epoch.
+Training, validation and test datasets are already provided. I didn't need to further split them. I just shuffled the training set before training the network to be sure to pick random batches at each epoch.
 
-My final training set has 34799 grayscale samples, each being 32 x 32 pixels. My validation set has 4410 grayscale samples, same shape as the training set, while the test set has 12630 images with same shape as the training set images.
+I used the training set for training the network and the validation set to tune the hyperparameters. Once done, I used the test set to test the classifier on previously unseen data.
 
-I didn't augment the dataset since the classifier has already an overall accuracy between 96% and 97%. Moreover, I didn't want to do dataset augmentation nefore having a look at the performance of the classifier. My guess was that, due to different traffic sign frequencies, it makes more sense, eventually, to do a dataset augmentation driven by the performance of the classifier in classifying each class.
+The final training set has 34799 samples, the validation set has 4410 samples, while the test set has 12630 samples. All images are grayscale images of size 32 x 32 pixels.
+
+I didn't augment the dataset since I decided I would have done dataset augmentation as the last thing to try if performances were not good enough.
+This because of the following reasons:
++ Augmenting the dataset takes computing time to actually manipulate images (rotate, flip, increase contrast and/or brightness, add additional sources of light,...)
++ Augmenting the dataset increases training and validation time
++ Augmenting the dataset increases the memory required to store additional images
+
+I decided to start with an architecture that resembles the popular LeNet-5 architecture and just observe its performance on traffic signs classification.
+As a matter of fact LeNet-5 already has an overall accuracy of about 90% 'as is'.
+
+I also guessed that, due to different traffic sign frequencies, it made more sense, eventually, to do a dataset augmentation after observing the actual performances of the classifier in classifying each traffic sign class. Being a multiclass classification problem, I guessed performances of the classifier would have changed depending on the traffic sign class. As a result, applying data augmentation to each and every class does not make much sense to me. I would rather approach the problem of augmenting the training set just for traffic sign classes whose performances are not good enough. This way the effort required to augment the dataset is minimal and the size of the training set is kept at minimum too.
 
 ### 3. Describe, and identify where in your code, what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
