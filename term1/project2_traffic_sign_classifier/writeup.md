@@ -89,22 +89,34 @@ I didn't augment the dataset since the classifier has already an overall accurac
 
 ####3. Describe, and identify where in your code, what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
-The code for my final model is located in the seventh cell of the ipython notebook.
+The code for my final model is located in the tenth cell of the Jupyter notebook.
 
 My final model consisted of the following layers:
 
-| Layer         		|     Description	        					|
-|:---------------------:|:---------------------------------------------:|
-| Input         		| 32x32x3 RGB image   							|
-| Convolution 3x3     	| 1x1 stride, same padding, outputs 32x32x64 	|
-| RELU					|												|
-| Max pooling	      	| 2x2 stride,  outputs 16x16x64 				|
-| Convolution 3x3	    | etc.      									|
-| Fully connected		| etc.        									|
-| Softmax				| etc.        									|
-|						|												|
-|						|												|
-
+| Layer         		| Description   	        					                |
+|:-----------------:|:-------------------------------------------------:|
+| Input         		| 32x32x1 Grayscale image   							          |
+| Convolution 3x3   | 1x1 stride, valid padding, output 30x30x6 	      |
+|                   | parameters: 60 (54 weights, 6 biases)             |
+| ReLU activation		|												                            |
+| Convolution 5x5   | 1x1 stride, valid padding, output 26x26x16        |
+|                   | parameters: 2416 (2400 weights, 16 biases)        |
+| ReLU activation		|												                            |
+| Convolution 5x5	  | 1x1 stride, valid padding, output 22x22x32      	|
+|                   | parameters: 12832 (12800 weights, 32 biases)      |
+| ReLU activation		|												                            |
+| Max Pooling 2x2   | 2x2 stride, valid pooling, output 11x11x32        |
+| Flattening layer  | input: 11x11x32, output: 3872                     |
+| Fully connected		| input: 3872, output: 120                          |
+|                   | parameters: 464760 (464640 weights and 120 biases)|
+| Dropout           | Keep probability: 0.6 (training)                  |
+| Fully connected   | input: 120, output: 84                            |
+|                   | parameters: 10164 (10080 weights and 84 biases)   |
+| Output				    | input: 84, output: 43                             |
+| Softmax           | 43 one-hot-encoded vectors                        |
+|:-----------------:|:-------------------------------------------------:|
+|                   | Total parameters: 493887                          |
+|                   | (493586 weights and 301 biases)                   |
 
 
 ####4. Describe how, and identify where in your code, you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
