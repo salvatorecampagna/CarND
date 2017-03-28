@@ -26,19 +26,18 @@ The Jupyter Notebook is exported also as an HTML file and is available at the fo
 
 ## Data Set Summary & Exploration
 
-### 1. Provide a basic summary of the data set and identify where in your code the summary was done. In the code, the analysis should be done using python, numpy and/or pandas methods rather than hardcoding results manually.
+***Provide a basic summary of the data set and identify where in your code the summary was done. In the code, the analysis should be done using python, numpy and/or pandas methods rather than hardcoding results manually.***
 
-The Python code providing basic summary of the data is contained in the third and fourth code cells of the Jupyter notebook. I first reported the shapes of the datasets, in such a way to understand how datasets are organized and how much data is available for training, validation and testing of the classifier.
+The Python code providing basic summary of the data is contained in the 3rd and 4th code cells of the Jupyter notebook. I first reported the shapes of the datasets, in such a way to understand how datasets are organized and how much data is available for training, validation and testing of the classifier.
 
-I also used Pandas, at this stage, to load the table mapping traffic sign ids to traffic sign labels. This way I have a table mapping, for instance, traffic sign id 2 to label 'Speed limit (50km/h)' and so on.
+I used numpy to calculate summary statistics of the traffic signs data set:
 
-I used the numpy library to calculate summary statistics of the traffic
-signs data set:
++ The size of training set is 34799
++ The size of test set is 12630
++ The shape of a traffic sign image is 32 x 32 pixels
++ The number of unique classes/labels in the data set is 43
 
-* The size of training set is 34799
-* The size of test set is 12630
-* The shape of a traffic sign image is 32 x 32 pixels
-* The number of unique classes/labels in the data set is 43
+I used Pandas, at this stage, to load the table mapping traffic sign IDs to traffic sign labels. This way I have a table mapping, for instance, traffic sign ID 2 to label 'Speed limit (50km/h)' and so on.
 
 ### 2. Include an exploratory visualization of the dataset and identify where the code is in your code file.
 
