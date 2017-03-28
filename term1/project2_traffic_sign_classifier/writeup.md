@@ -119,9 +119,16 @@ My final model consisted of the following layers:
 
 ### 4. Describe how, and identify where in your code, you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
 
-The code for training the model is located in the eigth cell of the ipython notebook.
+The code for training the model is located in the 12th cell of the Jupyter notebook.
 
-To train the model, I used an ....
+To train the model, I used the AdamOptimizer. The hyperparameters used during training are the following:
++ Epochs: 100
++ Batch size: 160
++ Learning rate: 0.001
++ Train dropout keep probability: 0.6
+
+Input image data in the training set has been normalized so to improve convergence of the optimization algorithm. I have tried mutiple different combinations
+of the parameters before coming up with this set.
 
 ### 5. Describe the approach taken for finding a solution. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
