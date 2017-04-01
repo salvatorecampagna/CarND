@@ -16,6 +16,12 @@ The goals / steps of this project are the following:
 
 [barchart]: ./examples/barchart.png "Traffic Sign frequency"
 [no_vehicle_grayscale]: ./examples/no_vehicle_grayscale.png "No Vehicle grayscale"
+[test_image1]: ./test_images/keep_right.png "Keep right"
+[test_image2]: ./test_images/no_passing_over_35.png "No passing over 3.5"
+[test_image3]: ./test_images/road_work.png "Road work"
+[test_image4]: ./test_images/slippery_road.png "Slippery road"
+[test_image5]: ./test_images/speed_limit_30.png "Speed limit (30km/h)"
+[test_image6]: ./test_images/speed_limit_70.png "Speed limit (70km/h)"
 
 ## Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
 ---
@@ -28,9 +34,9 @@ The Jupyter Notebook is exported also as an HTML file and is available at the fo
 
 ***Provide a basic summary of the data set and identify where in your code the summary was done. In the code, the analysis should be done using python, numpy and/or pandas methods rather than hardcoding results manually.***
 
-The Python code providing basic summary of the data is contained in the 3rd and 4th code cells of the Jupyter notebook. I first reported the shapes of the datasets, in such a way to understand how datasets are organized and how much data is available for training, validation and testing of the classifier.
+The Python code providing basic summary of the data is contained in the 3rd and 4th code cells of the Jupyter notebook. I first reported the shapes of the datasets, in such a way to understand how datasets are organized and how many samples are available for training, validation and testing of the classifier.
 
-I used numpy to calculate summary statistics of the traffic signs data set:
+Summary statistics of the traffic signs data set:
 
 + The size of training set is 34799
 + The size of test set is 12630
@@ -41,25 +47,24 @@ I used Pandas, at this stage, to load the table mapping traffic sign IDs to traf
 
 ***Include an exploratory visualization of the dataset and identify where the code is in your code file.***
 
-The Python code for this step is contained in the fifth code cell of the Jupyter notebook.
+The Python code for this step is contained in the 5th code cell of the Jupyter notebook.
 
 Here is an exploratory visualization of the data set. It is a bar chart showing the frequency of each traffic sign in the training dataset.
 
 ![alt text][barchart]
 
-In the fifth cell I also show a frequency table. The frequency table provides frequency data for each traffic sign, ordering them by their frequency. As we can see there are traffic signs whose frequency is higher, such as 'Speed limit (50km/h)', 'Yield' or 'Keep right' and traffic signs which are less frequent, such as 'Go straight or left', 'Dangerous curve to the left' or 'Speed limit (20km/h)'.
+In the 5th cell I also show a frequency table. The frequency table provides frequency data for each traffic signs, ordering them by their frequency. As we can see there are traffic signs whose frequency is higher, such as 'Speed limit (50km/h)', 'Yield' or 'Keep right' and traffic signs which are less frequent, such as 'Go straight or left', 'Dangerous curve to the left' or 'Speed limit (20km/h)'.
 
-For this reason particular care is required when evaluating the performance of the classifier.
+For this reason particular care is required when evaluating the performance of the classifier since not all classes are equally represented in the training set.
 
 ## Design and Test a Model Architecture
 
 ***Describe how, and identify where in your code, you preprocessed the image data. What tecniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc.***
 
-The code for this step is contained in the sixth, seventh and eighth code cell of the Jupyter notebook.
+The code for this step is contained in the 6th, 7th and 8th code cell of the Jupyter notebook.
 
-As a first step, I decided to convert the images from RGB to grayscale. Apparently colors do not convey useful information for classification. Neurons in different layers detect features like shapes, lines and contrast which are not related to the color itself of the traffic sign.
-
-Feeding the network with RGB images, instead of grayscale images, does not bring any visible improvement to the classification accuracy. Using grayscale images instead of RGB images also simplifies and speeds up the network training.
+As a first step, I decided to convert the images from RGB to grayscale. Apparently colors do not convey useful information for classification. Neurons in different layers detect features like shapes, lines and contrast which are not related to the color itself of the traffic sign. Moreover when switching from RGB to grayscale images the accuracy of the classifier was not affected.
+As a result, feeding the network with RGB images, instead of grayscale images, does not bring any improvement to the classification accuracy. Using grayscale images instead of RGB images, instead, simplifies and speeds up the network training.
 
 As a last step, I normalized the image data using Min-Max scaling in such a way that values range in the interval [0.1, 0.9]. This way gradient descent and similar optimization algorithms converge much faster to the optimal solution.
 
@@ -69,53 +74,53 @@ Here is an example of a traffic sign image after grayscaling.
 
 ***Describe how, and identify where in your code, you set up training, validation and testing data. How much data was in each set? Explain what techniques were used to split the data into these sets. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, identify where in your code, and provide example images of the additional data)***
 
-Training, validation and test datasets are already provided. I didn't need to further split them. I just shuffled the training set before training the network to be sure to pick random batches at each epoch.
+Training, validation and test datasets are already provided. I didn't need to further split them. I just shuffled the training set before training the network, so to be sure to pick random batches at each epoch.
 
-I used the training set for training the network and the validation set to tune the hyperparameters. Once done, I used the test set to test the classifier on previously unseen data.
+I used the training set for training the network and the validation set to tune the hyperparameters (more details later). Once done, I used the test set to test the classifier on previously unseen data.
 
 The final training set has 34799 samples, the validation set has 4410 samples, while the test set has 12630 samples. All images are grayscale images of size 32 x 32 pixels.
 
 I didn't augment the dataset since I decided I would have done dataset augmentation as the last thing to try if performances were not good enough.
 This because of the following reasons:
 + Augmenting the dataset takes computing time to actually manipulate images (rotate, flip, increase contrast and/or brightness, add additional sources of light,...)
-+ Augmenting the dataset increases training and validation time
++ Augmenting the dataset increases training and validation time of the network
 + Augmenting the dataset increases the memory required to store additional images
 
-I decided to start with an architecture that resembles the popular LeNet-5 architecture and just observe its performance on traffic signs classification.
-As a matter of fact LeNet-5 already has an overall accuracy of about 90% 'as is'.
+I also guessed that, due to different traffic sign frequencies, it made more sense, eventually, to do a dataset augmentation after observing the actual performances of the classifier in classifying each traffic sign class. Being a multiclass classification problem, I guessed performances of the classifier would have changed depending on the traffic sign class. For this reason, applying data augmentation to each and every class does not make much sense to me. I would rather approach the problem of augmenting the training set just for traffic sign classes whose performances are not good enough. This way the effort required to augment the dataset is minimal and the size of the training set is kept at minimum too.
 
-I also guessed that, due to different traffic sign frequencies, it made more sense, eventually, to do a dataset augmentation after observing the actual performances of the classifier in classifying each traffic sign class. Being a multiclass classification problem, I guessed performances of the classifier would have changed depending on the traffic sign class. As a result, applying data augmentation to each and every class does not make much sense to me. I would rather approach the problem of augmenting the training set just for traffic sign classes whose performances are not good enough. This way the effort required to augment the dataset is minimal and the size of the training set is kept at minimum too.
+I decided to start with an architecture that resembles the popular LeNet-5 architecture and just observe its performance on traffic signs classification. After evaluating the performances of LeNet-5 I procedeed to improving it.
+As a matter of fact LeNet-5 already has an overall accuracy of about 90% 'as is'.
 
 ### 3. Describe, and identify where in your code, what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
-The code for my final model is located in the tenth cell of the Jupyter notebook.
+The code for my final model is located in the 10th cell of the Jupyter notebook.
 
 My final model consisted of the following layers:
 
-| Layer         		| Description   	        					                |
-|:-----------------:|:-------------------------------------------------:|
-| Input         		| 32x32x1 Grayscale image   							          |
-| Convolution 3x3   | 1x1 stride, valid padding, output 30x30x6 	      |
-|                   | parameters: 60 (54 weights, 6 biases)             |
-| ReLU activation		|												                            |
-| Convolution 5x5   | 1x1 stride, valid padding, output 26x26x16        |
-|                   | parameters: 2416 (2400 weights, 16 biases)        |
-| ReLU activation		|												                            |
-| Convolution 5x5	  | 1x1 stride, valid padding, output 22x22x32      	|
-|                   | parameters: 12832 (12800 weights, 32 biases)      |
-| ReLU activation		|												                            |
-| Max Pooling 2x2   | 2x2 stride, valid pooling, output 11x11x32        |
-| Flattening layer  | input: 11x11x32, output: 3872                     |
+| Layer         		| Description       	        					|
+|:---------------------:|:-------------------------------------------------:|
+| Input         		| 32x32x1 grayscale image       					|
+| Convolution 3x3       | 1x1 stride, valid padding, output 30x30x6 	    |
+|                       | parameters: 60 (54 weights, 6 biases)             |
+| ReLU activation		|							    					|
+| Convolution 5x5       | 1x1 stride, valid padding, output 26x26x16        |
+|                       | parameters: 2416 (2400 weights, 16 biases)        |
+| ReLU activation		|								    				|
+| Convolution 5x5	    | 1x1 stride, valid padding, output 22x22x32      	|
+|                       | parameters: 12832 (12800 weights, 32 biases)      |
+| ReLU activation		|						                            |
+| Max Pooling 2x2       | 2x2 stride, valid pooling, output 11x11x32        |
+| Flattening layer      | input: 11x11x32, output: 3872                     |
 | Fully connected		| input: 3872, output: 120                          |
-|                   | parameters: 464760 (464640 weights and 120 biases)|
-| Dropout           | Keep probability: 0.6 (training)                  |
-| Fully connected   | input: 120, output: 84                            |
-|                   | parameters: 10164 (10080 weights and 84 biases)   |
-| Output				    | input: 84, output: 43                             |
-| Softmax           | 43 one-hot-encoded vectors                        |
-|:-----------------:|:-------------------------------------------------:|
-|                   | Total parameters: 493887                          |
-|                   | (493586 weights and 301 biases)                   |
+|                       | parameters: 464760 (464640 weights and 120 biases)|
+| Dropout               | Keep probability: 0.6 (training)                  |
+| Fully connected       | input: 120, output: 84                            |
+|                       | parameters: 10164 (10080 weights and 84 biases)   |
+| Output			    | input: 84, output: 43                             |
+| Softmax               | 43 one-hot-encoded vectors                        |
+|:---------------------:|:-------------------------------------------------:|
+|                       | Total parameters: 493887                          |
+|                       | (493586 weights and 301 biases)                   |
 
 
 ### 4. Describe how, and identify where in your code, you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
@@ -126,74 +131,127 @@ To train the model, I used the AdamOptimizer. The hyperparameters used during tr
 + Epochs: 100
 + Batch size: 160
 + Learning rate: 0.001
-+ Train dropout keep probability: 0.6
++ Train dropout keep probability: 0.5
 
-Input image data in the training set has been normalized so to improve convergence of the optimization algorithm. I have tried mutiple different combinations
-of the parameters before coming up with this set.
+The set of hyperparameters has been selected by manually and iteratively tuning each paremeter using the validation set.
+
+Input image data in the training set has been normalized so to improve convergence of the optimization algorithm.
 
 ### 5. Describe the approach taken for finding a solution. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
-The code for calculating the accuracy of the model is located in the ninth cell of the Ipython notebook.
+Training of the network takes place in the 12th cell. In the same cell, after each epoch the validation set is used to
+evaluate he perfoamnce of the network after each epoch. For each epoch the loss and accuracy is computed on both the training set and test set. Comparing the loss and accuracy on the training set and validation set allows to check for overfitting.
+Moreover, two plots are displayed in the 13th cell, showing the training and validation loss and accuracy as a function of the number of training epochs. Cell 14 reports the result on the test set.
 
 My final model results were:
-* training set accuracy of ?
-* validation set accuracy of ?
-* test set accuracy of ?
+* training set accuracy of 99%
+* validation set accuracy of 98%
+* test set accuracy more than 96%
 
-If an iterative approach was chosen:
-* What was the first architecture that was tried and why was it chosen?
-* What were some problems with the initial architecture?
-* How was the architecture adjusted and why was it adjusted? Typical adjustments could include choosing a different model architecture, adding or taking away layers (pooling, dropout, convolution, etc), using an activation function or changing the activation function. One common justification for adjusting an architecture would be due to over fitting or under fitting. A high accuracy on the training set but low accuracy on the validation set indicates over fitting; a low accuracy on both sets indicates under fitting.
-* Which parameters were tuned? How were they adjusted and why?
-* What are some of the important design choices and why were they chosen? For example, why might a convolution layer work well with this problem? How might a dropout layer help with creating a successful model?
+I chose and iterative approach:
++ I started with a network resembling the architecture of LeNet-5, which had an accuracy of about 90%.
++ I first tried to normalize data using Min-Max scaling to improve the AdamOptimizer convergence to the optimal solution.
++ I then decided to try using grayscale images instead of RGB images to reduce the amount of data to process and speedup training time. I found that having RGB images does not really matter since the accuracy doesn't change.
++ At this point I used the validation set to find a good set of hyperparameter values including the optimized learning rate, the batch size and the number of epochs.
++ After that, I tried to increase the number of neurons in differet layers making the network wider. This was not providing meaningful improvements so I discarded this option.
++ Then I tried removing the two Max Pooling layers at the output of the two first convolutional layers and replaced them with dropout. I added dropout between the two fully connected layers. Using dropout makes the network more robust against overfitting since, the network, cannot rely on the presence of a single neuron but rather have more neurons sharing the effort of learning a specific feature. After adding the dropout layer I had to use an iterative approch to find a good value for the additional hyperparameter, the keep probability of the dropout layer. Once found a good value for the keep probability I had a better accuracy score, around 93%, and I decided to keep dropout in place of the two Max Pooling layers.
++ Now, since a wider network was not providing better results, I tried to make the network deeper adding an additional convolutional layer. I wanted to try adding a small layer so to avoid adding too many parameters. This way I avoid increasing too much the training time of the network. For this reason I added a 3x3 convolutional layer with ReLU activation just after the input layer and before the first convolutional layer. That gave some improvement on the accuracy.
++ While doing all these iterations I have always plotted two graphs showing the loss and accuracy, on the training and validation sets, as functions of the number of epochs to make sure the network was not underfitting or overfitting.
++ Summarizing, I kept a LeNet-5 based network arcitecture with one additional 3x3 convolutional layer after the input layer, removed the two Max Pooling layers at the output of the second and third convolutional layer and added dropout between the first and the second fully connected layers. With this network architecture the accuracy on the test set is between 96% and 97%.
++ After 100 epochs the accuracy on the training set is around 99%, on the validation set is around 98%, while the accuracy on the test set is more than 96%. These values are quite close to each other so the network is not underfitting or overfitting.
 
-If a well known architecture was chosen:
-* What architecture was chosen?
-* Why did you believe it would be relevant to the traffic sign application?
-* How does the final model's accuracy on the training, validation and test set provide evidence that the model is working well?
-
+In cell 15 and 16 I also analyzed the performance of the classifier plotting a confusion matrix and computing the precision, recall and F1 score of the classifier for each of the 43 different output classes. The confusion matrix shows that the classifier has a different classification accuracy for each of the traffic signs. This means, for instance that the classifier is better at classifying traffic signs such as 'Dangerous curve to the left' and 'No entry' than it is in classifying traffic signs such as 'End of no passing' or 'Pedestrians'. This information could be axploited, for instance, if considering the idea of doing data augmentation of the training set to improve the performances of the classifier. A strategy could be to augment the dataset just for traffic signs whose classifier accuracy is low, such as 'End of no passing' or 'Pedestrians'.
 
 ## Test a Model on New Images
 
 ### 1. Choose five German traffic signs found on the web and provide them in the report. For each image, discuss what quality or qualities might be difficult to classify.
 
-Here are five German traffic signs that I found on the web:
+Here are eight German traffic signs that I found on the web:
 
-![alt text][image4] ![alt text][image5] ![alt text][image6]
-![alt text][image7] ![alt text][image8]
+![alt text][test_image1] ![alt text][test_image2] ![alt text][test_image3]
+![alt text][test_image4] ![alt text][test_image5] ![alt text][test_image6]
 
-The first image might be difficult to classify because ...
+I chose the traffic sign 'Speed limit (30km/h)' since it is easy to mistake it for 'Speed limit (80km/h)', while I chose the traffic sign 'No passing for vehicles over 3.5 metric tons' since it is easy to mistake it for 'End of no passing by vehicles over 3.5 metric tons'. For the others there is no specific reason.
 
 ### 2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set. Identify where in your code predictions were made. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set (OPTIONAL: Discuss the results in more detail as described in the "Stand Out Suggestions" part of the rubric).
 
-The code for making predictions on my final model is located in the tenth cell of the Ipython notebook.
+The code for making predictions on my final model is located in the 19th cell of the Jupyter notebook.
 
 Here are the results of the prediction:
 
-| Image			        |     Prediction	        					|
-|:---------------------:|:---------------------------------------------:|
-| Stop Sign      		| Stop sign   									|
-| U-turn     			| U-turn 										|
-| Yield					| Yield											|
-| 100 km/h	      		| Bumpy Road					 				|
-| Slippery Road			| Slippery Road      							|
+| Image			        						|     Prediction	        					|
+|:---------------------------------------------:|:---------------------------------------------:|
+| Keep right   									| Keep right									|
+| No passing for vehicles over 3.5 metric tons	| No passing for vehicles over 3.5 metric tons	|
+| Road work 									| Road work 									|
+| Slippery Road									| Slippery Road      							|
+| Speed limit (30km/h)							| Speed limit (30km/h)							|
+| Speed limit (70km/h)							| Speed limit (70km/h)							|
 
-
-The model was able to correctly guess 4 of the 5 traffic signs, which gives an accuracy of 80%. This compares favorably to the accuracy on the test set of ...
+The model was able to correctly guess 6 of the 6 traffic signs, therefore its accuracy is 100%. 
+This compares favorably to the accuracy on the test set which is more than 96%.
 
 ### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction and identify where in your code softmax probabilities were outputted. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
 
-The code for making predictions on my final model is located in the 11th cell of the Ipython notebook.
+The code for making predictions on my final model is located in the 18th cell of the Jupyter notebook.
 
-For the first image, the model is relatively sure that this is a stop sign (probability of 0.6), and the image does contain a stop sign. The top five soft max probabilities were
+For the first image, the model is relatively sure about the prediction. It predicts correctly the traffic sign as a 'Keep right' traffic sign with a probability very close to 1.00. The top five soft max probabilities were:
 
-| Probability         	|     Prediction	        					|
-|:---------------------:|:---------------------------------------------:|
-| .60         			| Stop sign   									|
-| .20     				| U-turn 										|
-| .05					| Yield											|
-| .04	      			| Bumpy Road					 				|
-| .01				    | Slippery Road      							|
+| Probability         	|     Prediction	        					    |
+|:---------------------:|:-------------------------------------------------:|
+| ~1.00        			| Keep right   									    |
+| ~0.00    				| Turn left ahead                                   |
+| ~0.00					| Speed limit (20km/h)							    |
+| ~0.00				    | Speed limit (30km/h)   						    |
+| ~0.00				    | Speed limit (50km/h) 							    |
 
 
-For the second image ...
+For the second image, the model is relatively sure about the prediction. It predicts correctly the traffic sign as a 'No passing for vehicles over 3.5 metric tons' traffic sign with a probability very close to 1.00. The top five soft max probabilities were:
+
+| Probability         	|     Prediction	        					    |
+|:---------------------:|:-------------------------------------------------:|
+| ~1.00        			| No passing for vehicles over 3.5 metric tons  	|
+| ~0.00    				| Speed limit (80km/h)                              |
+| ~0.00 				| End of no passing by vehicles over 3.5 metric tons|
+| ~0.00	      			| Vehicles over 3.5 metric tons prohibited          |
+| ~0.00				    | No passing            						    |
+
+For the third image, the model predicts correctly the traffic sign as 'Road work' with a probability very close to 1.00. The top five soft max probabilities were:
+
+| Probability         	|     Prediction	        					    |
+|:---------------------:|:-------------------------------------------------:|
+| ~1.00        			| Road work   									    |
+| ~0.00    				| Keep right                                        |
+| ~0.00					| Bycicles crossing									|
+| ~0.00	      			| Dangerous curve to the right					    |
+| ~0.00				    | Go straight or right      						|
+
+For the fourth image, the model is again quite sure about the prediction. It predicts correctly the traffic sign as a 'Splippery road' traffic sign with a probability very close to 1.00. The top five soft max probabilities were:
+
+| Probability         	|     Prediction	        					    |
+|:---------------------:|:-------------------------------------------------:|
+| ~1.00        			| Slippery road     							    |
+| ~0.00    				| Bycicles crossing                                 |
+| ~0.00					| Dangerous curve to the right					    |
+| ~0.00	      			| No passing					 				    |
+| ~0.00				    | Children crossing   						        |
+
+For the fifth image, the model is quite sure about the prediction. It predicts correctly the traffic sign as a 'Speed limit (30km/h)' traffic sign with a probability very close to 1.00. The top five soft max probabilities were:
+
+| Probability         	|     Prediction	        					    |
+|:---------------------:|:-------------------------------------------------:|
+| ~1.00        			| Speed limit (30km/h)							    |
+| ~0.00    				| End of speed limit (80km/h)                       |
+| ~0.00					| Speed limit (20km/h)							    |
+| ~0.00	      			| Speed limit (70km/h)							    |
+| ~0.00				    | Speed limit (80km/h)							    |
+
+For the sixth image, the model is sure about the prediction. It predicts correctly the traffic sign as a 'Speed limit (70km/h)' traffic sign with a probability very close to 1.00. The top five soft max probabilities were:
+
+| Probability         	|     Prediction	        					    |
+|:---------------------:|:-------------------------------------------------:|
+| ~1.00        			| Speed limit (70km/h)							    |
+| ~0.00    				| Speed limit (20km/h)							    |
+| ~0.00					| Speed limit (30km/h)							    |
+| ~0.00	      			| Stop      					 				    |
+| ~0.00				    | General caution       						    |
