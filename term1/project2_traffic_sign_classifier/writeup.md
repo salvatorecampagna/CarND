@@ -26,9 +26,9 @@ The goals / steps of this project are the following:
 ## Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
 ---
 This file describes the project and all the steps carried out to implement a Traffic Sign classifier using a Convolutional Neural Network implemented in TensorFlow.
-The project itself is provided as a Python Jupyter Notebook available at the following link: [project code](CarND/term1/project2_traffic_sign_classifier/Traffic_Sign_Classifier.ipynb)
+The project itself is provided as a Python Jupyter Notebook available at the following link: [project code](https://github.com/salvatorecampagna/CarND/blob/master/term1/project2_traffic_sign_classifier/Traffic_Sign_Classifier.ipynb)
 
-The Jupyter Notebook is exported also as an HTML file and is available at the following link: [project html](CarND/term1/project2_traffic_sign_classifier/Traffic_Sign_Classifier.html)
+The Jupyter Notebook is exported also as an HTML file and is available at the following link: [project html](https://github.com/salvatorecampagna/CarND/blob/master/term1/project2_traffic_sign_classifier/Traffic_Sign_Classifier.html)
 
 ## Data Set Summary & Exploration
 
