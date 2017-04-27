@@ -22,7 +22,7 @@
 # ---
 # ## Step 0: Load The Data
 
-# In[141]:
+# In[1]:
 
 # Load pickled data
 import pickle
@@ -56,7 +56,7 @@ X_test, y_test = test['features'], test['labels']
 
 # ## Train, test and validation set shapes
 
-# In[142]:
+# In[2]:
 
 print('X_train: {0}'.format(X_train.shape))
 print('y_train: {0}'.format(y_train.shape))
@@ -81,7 +81,7 @@ print('y_test: {0}'.format(y_test.shape))
 
 # ### Provide a Basic Summary of the Data Set Using Python, Numpy and/or Pandas
 
-# In[143]:
+# In[3]:
 
 ### Replace each question mark with the appropriate value. 
 ### Use python, pandas or numpy methods rather than hard coding the results
@@ -114,7 +114,7 @@ print("Number of classes =", n_classes)
 # ### Exploratory visualization
 # The following cell shows a set of ten images randomly selected from the training set.
 
-# In[144]:
+# In[4]:
 
 ### Data exploration visualization code goes here.
 ### Feel free to use as many code cells as needed.
@@ -143,7 +143,7 @@ for i in range(10):
 # ### Traffic sign training set frequencies
 # The training dataset is skewed, different traffic signs in the training dataset have different frequencies. This can possibly affect the performances of the classifier for diffeent traffic signs. The expectation is that the classifier is better at classifing traffic signs whose frequecy of samples is higher. Expectation is also that the effectiveness of the traffic sign classifier could,, then, be improved for less frequent traffic signs using dataset augmentation techniques including, for instance, rotated images, flipped images, brighter/darker images or images with alternative sources of light.
 
-# In[145]:
+# In[5]:
 
 # Show traffic sign training set frequencies
 unique, counts = np.unique(y_train, return_counts=True)
@@ -188,7 +188,7 @@ plt.grid(True)
 
 # Use the code cell (or multiple code cells, if necessary) to implement the first step of your project.
 
-# In[146]:
+# In[6]:
 
 ### Preprocess the data here. Preprocessing steps could include normalization, converting to grayscale, etc.
 ### Feel free to use as many code cells as needed.
@@ -267,7 +267,7 @@ print("y_test_new shape: {0}".format(y_test_new.shape))
 # 1. **Conversion** from **RGB** to **Grayscale**: apparently colors do not convey useful information for classification. Neurons in different layers detect features like shapes, lines and contrast which are not related to the color itself of the traffic sign. Feeding the network with RGB images, instead of grayscale images, does not bring any improvement to the classification accuracy. Using grayscale images instead of RGB images also simplifies and speeds up the network training due to less amount of data to process.
 # 2. **Normalization** and **feature scaling**: this way gradient descent and similar optimization algorithms converge much faster to the optimal solution. In this scanario Min-Max scaling is used. Each image is scaled in such a way that  values range in the interval [0.1, 0.9].
 
-# In[147]:
+# In[7]:
 
 # Replace original training, validation and test set with preprocessed sets
 X_train = X_train_new
@@ -283,14 +283,14 @@ X_train, y_train = shuffle(X_train, y_train)
 
 # ### Pre-processed image samples
 
-# In[148]:
+# In[8]:
 
 # Show some sample pre-processed images
 print("Sample pre-processed images")
 random.seed(42)
 for i in range(10):
     index = random.randint(1, n_train)
-    plt.imshow(X_train[index])
+    plt.imshow(X_train[index], cmap='gray')
     plt.title(signnames.loc[y_train[index]]['label'])
     plt.show()
 
@@ -305,7 +305,7 @@ print("y_test shape: {0}".format(y_test.shape))
 # ### Training, test and validation sets preparation
 # The Convolutional Neural Network expects 32 x 32 grayscale input images (32 x 32 x 1). As a result the training, validation and test sets are reshaped accordingly.
 
-# In[149]:
+# In[9]:
 
 # Reshape the training, validation and test set so to match the
 # input shape required by the model (None, 32, 32, 1)
@@ -372,7 +372,7 @@ print("y_test shape: {0}".format(y_test.shape))
 # 
 # **Total paremeters**: 493887 (493586 weights and 301 biases)
 
-# In[150]:
+# In[10]:
 
 ### Define your architecture here.
 ### Feel free to use as many code cells as needed.
@@ -490,7 +490,7 @@ print('y_pred: {0}'.format(y_pred.get_shape()))
 # A validation set can be used to assess how well the model is performing. A low accuracy on the training and validation
 # sets imply underfitting. A high accuracy on the training set but low accuracy on the validation set implies overfitting.
 
-# In[151]:
+# In[11]:
 
 def plot_data(train_data_loss, train_data_acc, val_data_loss, val_data_acc, epochs):
     """
@@ -529,9 +529,9 @@ def plot_data(train_data_loss, train_data_acc, val_data_loss, val_data_acc, epoc
 # 1. **Epochs**: 100
 # 2. **Batch size**: 160 samples
 # 3. **Learning rate**: 0.001
-# 4. **Training dropout keep probability**: 0.6
+# 4. **Training dropout keep probability**: 0.5
 
-# In[159]:
+# In[12]:
 
 ### Train your model here.
 ### Calculate and report the accuracy on the training and validation set.
@@ -559,7 +559,7 @@ BATCH_SIZE = 160
 LEARNING_RATE = 0.001
 
 # Dropout keep probabilities to use while training the network
-TRAIN_KEEP_PROB = 0.6
+TRAIN_KEEP_PROB = 0.5
 # Dropout keep probability must be 1.0 for validation and test set in such a way to use the full network capability
 VALID_KEEP_PROB = 1.0
 TEST_KEEP_PROB = 1.0
@@ -652,7 +652,7 @@ with tf.Session() as session:
 
 # ### Train and validation loss and accuracy
 
-# In[160]:
+# In[13]:
 
 # Plot training and validation loss and accuracy
 plot_data(train_data_loss, train_data_acc, val_data_loss, val_data_acc, range(EPOCHS))
@@ -663,7 +663,7 @@ plot_data(train_data_loss, train_data_acc, val_data_loss, val_data_acc, range(EP
 # 
 # Anyway, overall (average) accuracy is not the only metric to consider when evaluating the performances of a classifier, especially if the training set is skewed as we have seen before. Moreover, in a multiclass classification problem like this one, the overall average performances of the classifier do not provide a good estimation of the classifier performances. Overall accuracy, is, as amatter of fact, the result of averaging the performances of the classifier while classifying images whose label is one the possible multiple output labels. Other metrics to take into account include measuring the **precision**, **recall** and **F1 score** of the classifier for each of the traffic sign classes.
 
-# In[161]:
+# In[14]:
 
 # Evaluate the model on test set
 with tf.Session() as session:
@@ -682,7 +682,7 @@ with tf.Session() as session:
 # ### Traffic sign classifier confusion matrix
 # When it comes to evaluating the performance of a (multiclass) classifier a **confusion matrix** is a good starting point. In this scenario I have used the functionality provided by **Scikit Learn** to compute the confusion matrix. Each column of the confusion matrix represents predicted classes (one for each of the possible 43 traffic sign classes) while each row represents actual classes (one for each of the possible 43 traffic sign classes). This results in the confusion matrix being a 43 x 43 matrix. The diagonal elements represent samples for which the classifier predicted label matches the actual label, while off-diagonal elements are those that are mislabeled by the classifier. The higher the diagonal values of the confusion matrix the better, indicating many correct predictions. In this case, since the number of samples varies for different classes, values reported by the confusion matrix have been normalized. Looking at diagonal elements we can see (as expected) that the classifier is better at classifying some traffic signs than others.
 
-# In[162]:
+# In[15]:
 
 from sklearn.metrics import confusion_matrix
 import itertools
@@ -736,7 +736,7 @@ with tf.Session() as session:
 # 
 # For instance, the F1 score of the classifier in classifying the 'End of no passing' traffic sign is lower with respect to others. This suggests that, probably, applying data augmentation to the training set to augment the samples of  'End of no passing' traffic signs can improve the performance of the classifier in classifying this specific traffic sign and, as a consequence, improve the overall performance of the classifier.
 
-# In[163]:
+# In[16]:
 
 # Compute precision, recall, F1 score and support for each of the 43 traffic sign classes
 from sklearn.metrics import precision_recall_fscore_support
@@ -788,7 +788,7 @@ for i in low_score_ids:
 # ### Evaluating the classifier against the classes whose F1 score is lower
 # In the following cell we evaluate the performance of the classifier in classifying the three traffic signs whose **F1 score** is lower. This gives an understanding of what kind of erros the classifier is experiancing and which traffic sign is taking for what.
 
-# In[165]:
+# In[17]:
 
 # Open the test set to extract the origina images
 with open(testing_file, mode='rb') as f:
@@ -799,7 +799,7 @@ with open(testing_file, mode='rb') as f:
     
 # Select 10 samples from the test set among the images whose classification accuracy is on average lowe
 # (see cell output above for a list of traffic signs whose classification accuracy is low)
-n_samples = 24
+n_samples = 6
 random.seed(31)
 # Extract some random samples from the set of traffic signs whose classification accuracy is low
 test_samples = random.sample(low_score_samples, n_samples)
@@ -819,11 +819,11 @@ with tf.Session() as session:
     
     # Plot the original images and, for each, the top 5 predicted softmax probabilities
     for i in range(_images.shape[0]):
-        plt.figure(figsize=(20, 60))
+        plt.figure(figsize=(20, 20))
         plt.subplot(n_samples, 2, 2*i+1)
-        plt.title(signnames.loc[_labels[i]]['label'])
+        plt.title(signnames.loc[_labels[i]]['label'], loc='left')
         plt.imshow(_images[i])
-        plt.axis('off')
+        #plt.axis('off')
         plt.subplot(n_samples, 2, 2*i+2)
         plt.barh(np.arange(0, 5, 1), predicts[0][i])
         y_labels = [signnames.loc[i]['label'] for i in predicts[1][i]]
@@ -843,7 +843,7 @@ with tf.Session() as session:
 
 # ### Load and Output the Images
 
-# In[168]:
+# In[18]:
 
 ### Load the images and plot them here.
 ### Feel free to use as many code cells as needed.
@@ -868,7 +868,7 @@ for img in test_images:
 print("Pre-processed test images")
 gray_images = preprocess_images(images)
 for gray_image in gray_images:
-    plt.imshow(gray_image)
+    plt.imshow(gray_image, cmap='gray')
     plt.show()
 
 # Convert images to numpy arrays and adjust shapes according to the shape expected by the model
@@ -880,7 +880,7 @@ print("gray_images shape: {}".format(gray_images.shape))
 
 # ### Predict the Sign Type for Each Image
 
-# In[169]:
+# In[19]:
 
 ### Run the predictions here and use the model to output the prediction for each image.
 ### Make sure to pre-process the images with the same pre-processing pipeline used earlier.
@@ -900,13 +900,13 @@ for image, sign_id in zip(images, sign_ids):
 
 # ### Analyze Performance
 
-# In[170]:
+# In[20]:
 
 ### Calculate the accuracy for these 5 new images. 
 ### For example, if the model predicted 1 out of 5 signs correctly, it's 20% accurate on these new images.
 
 # Correct test image labels
-correct_labels = [21, 38, 17, 10, 25, 23, 1, 4]
+correct_labels = [38, 10, 25, 23, 1, 4]
 if len(correct_labels) != n_test_images:
     print("Only {0} labels for {1} test images".format(len(correct_labels), n_test_images))
 # Compute accuracy as the ratio between correctly classified images and total number of images
@@ -956,7 +956,7 @@ with tf.Session() as session:
 # 
 # Looking just at the first row we get `[ 0.34763842,  0.24879643,  0.12789202]`, you can confirm these are the 3 largest probabilities in `a`. You'll also notice `[3, 0, 5]` are the corresponding indices.
 
-# In[171]:
+# In[21]:
 
 ### Print out the top five softmax probabilities for the predictions on the German traffic sign images found on the web. 
 ### Feel free to use as many code cells as needed.
@@ -997,7 +997,7 @@ plt.show()
 #  <p></p> 
 # 
 
-# In[175]:
+# In[22]:
 
 ### Visualize your network's feature maps here.
 ### Feel free to use as many code cells as needed.
