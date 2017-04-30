@@ -26,7 +26,7 @@ The goals / steps of this project are the following:
 
 ---
 
-The full code is included in the Jupyter Noteboon located at ./advanced_lane_detection.ipynb.
+The full code is included in the Jupyter Notebook located at `./advanced_lane_detection.ipynb`.
 
 ### Camera Calibration
 
@@ -44,7 +44,7 @@ I then used the output `objpoints` and `imgpoints` to compute the camera calibra
 
 #### 1. Provide an example of a distortion-corrected image.
 
-Image undistortion is provided in cell 6 by function `image_undistort()`. This function is used to undistort input images coming from the camera and needs the camera matrix and undistortion coefficient computer by `calibrate_camera()` above. Here is an example:
+Image undistortion is provided in cell 6 by function `image_undistort()`. This function is used to undistort input images coming from the camera and needs the camera matrix and undistortion coefficients computer by `calibrate_camera()` above. Here is an example:
 ![alt text][image_undist]
 
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
@@ -56,7 +56,7 @@ I used a combination of color and gradient thresholds to generate a binary image
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
-The code for performing perspective transform is provided in cell 12 by function `image_warp()`. This function takes as inputs an image (`image`) and  uses source (`src`) and destination (`dst`) points to transform the image from the camera view to a bird's eye view.  I chose to hardcode the source and destination points, which are the following:
+The code for performing perspective transform is provided in cell 12 by function `image_warp()`. This function takes as input an image (`image`) and  uses source (`src`) and destination (`dst`) points to transform the image from the camera view to a bird's eye view.  I chose to hardcode the source and destination points, which are the following:
 
 ```python
 src = np.float32([[575, 460],
@@ -79,6 +79,7 @@ This resulted in the following source and destination points:
 | 240, 720      | 440, 0        |
 
 I verified that my perspective transform was working as expected by drawing a test image and its warped counterpart in cell 13 to verify that the lines appear parallel in the warped image.
+Here is a sample warped image:
 
 ![alt text][test_warped]
 
@@ -118,7 +119,7 @@ Here's a [link to my video result](./project_video_lanes.mp4)
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-In my first attempt I tried using just gradient along X and Y, gradient magnitude and gradient direction to identify lane lines. After trying on some test images I realized that this was not good enough, so I explored different possibilities to use color thresholding. I have found that using the B channel of the Lab colorspace is quite effective in identifying yellow lines while the S channel of the HLS colorspace is good to identify white lines. So I combined the following thresholding techniques:
+In my first attempt I tried using just gradient along X and Y, gradient magnitude and gradient direction to identify lane lines. After trying on some test images I realized that this was not good enough, so I explored different possibilities such as using also color thresholding. I have found that using the 'b' channel of the Lab colorspace is quite effective in identifying yellow lines while the 'S' channel of the HLS colorspace is good to identify white lines. So I combined the following thresholding techniques:
 * Gradient along X
 * Gradient along Y
 * Gradient magnitude along both X and Y
