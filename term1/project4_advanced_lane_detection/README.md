@@ -85,15 +85,14 @@ Here is a sample warped image:
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial
 
-Lane line pixels are identified on the warped image by function `fit_lines()` provided in cell 19. This function uses two different functions to find the lane lines: `slide_window_search()` (cell 17) and `simple_window_search()` (cell 18). Searching for lane line always starts with `slide_window_search()` but once the left and right lane lines are found in a video frame, `simple_window_search()` is used instead, which limits searching for lane lines in the following image frames to a reduced area delimited by a margin. If `simple_window_search()` fails the `fit_lines()` function falls back to `slide_window_search()`. This results in improved performances while searching an image for lane lines.
-Both these two functions, `slide_window_search()` and `simple_window_search()`, return fit coefficients for a second order polynomial which are then used by function `image_lane()` to display the lane lines on the original undistorted image and on the warped image:
+Lane line pixels are identified on the warped image by function `slide_window_searc()` provided in cell 17. It returns fit coefficients for a second order polynomial which are then used by function `image_lane()` to display the lane lines on the original undistorted image and on the warped image:
 
 ![alt text][test_warplane]
 ![alt text][test_lane]
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-Computing radius of curvature of the lane and the position of the vehicle with respect to the center is performed by function `compute_curvature_and_distance()` provided in cell 22.
+Computing radius of curvature of the lane and the position of the vehicle with respect to the center is performed by function `compute_curvature_and_distance()` provided in cell 21.
 
 I also verified in the video that the radius of curvature in the first curve is about 1 KM.
 
@@ -127,7 +126,7 @@ In my first attempt I tried using just gradient along X and Y, gradient magnitud
 * HSL S channel
 * Lab b channel
 
-At this point my pipeline was working fine on test images and also on the first part of the video, but it failed with lane lines crossing in the final part of the video. For this reason I collected some more images from the video (images available in directory `./other_test_images`) and tested my pipeline against those 'difficult' images. The pipeline output (after improvement) on these images is available in cell 26 of the Jupyter Notebook.
+At this point my pipeline was working fine on test images and also on the first part of the video, but it failed with lane lines crossing in the final part of the video. For this reason I collected some more images from the video (images available in directory `./other_test_images`) and tested my pipeline against those 'difficult' images. The pipeline output (after improvement) on these images is available in cell 25 of the Jupyter Notebook.
 
 I realized that my pipeline was not good enough to identify lane lines in images with shadows and different light conditions. As a result, I had to fine tune the thresholds trying different values for both the gradient and color thresholds. I also replaced the HLS S thresholding with the Red RGB thresholding.
 
