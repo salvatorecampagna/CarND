@@ -10,6 +10,11 @@ The goals / steps of this project are the following:
 * Test that the model successfully drives around track one without leaving the road
 * Summarize the results with a written report
 
+Links to videos of the car driving in autonomous mode on the first and second track:
+
+[First track video](./run1.mp4)
+
+[Second track video](./run2.mp4)
 
 [//]: # (Image References)
 
