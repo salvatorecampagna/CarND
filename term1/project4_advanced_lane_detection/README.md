@@ -28,9 +28,9 @@ The goals / steps of this project are the following:
 
 The full code is included in the Jupyter Notebook located at `./advanced_lane_detection.ipynb`.
 
-[First video](./project_video_lanes.mp4)
+[First video](./project_video_lanes.mp4) - Processed by slower pipeline
 
-[Second video](./project_video_lanes_fast.mp4)
+[Second video](./project_video_lanes_fast.mp4) - Processed by faster pipeline
 
 ### Camera Calibration
 
