@@ -90,7 +90,7 @@ Here is a sample warped image:
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial
 
-Lane line pixels are identified on the warped image by function `slide_window_searc()` provided in cell 17. It returns fit coefficients for a second order polynomial which are then used by function `image_lane()` to display the lane lines on the original undistorted image and on the warped image:
+Lane line pixels are identified on the warped image by function `slide_window_search()` provided in cell 17. It returns fit coefficients for a second order polynomial which are then used by function `image_lane()` to display the lane lines on the original undistorted image and on the warped image:
 
 ![alt text][test_warplane]
 ![alt text][test_lane]
