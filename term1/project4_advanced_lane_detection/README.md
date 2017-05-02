@@ -21,6 +21,7 @@ The goals / steps of this project are the following:
 [test_warplane]: ./output_images/test_warplane.jpg "Lane lines on warped image"
 [test_lane]: ./output_images/test_lane.jpg "Lane lines on undistorted image"
 [test_curv_dist]: ./output_images/test_curv_dist.jpg "Curvature and vehicle position"
+[test_full_pipeline]: ./output_images/pipeline.png "Full pipeline"
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
 
@@ -112,6 +113,10 @@ Here is an example:
 ### Pipeline (video)
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
+
+Here is a sample input frame as processed by the full pipeline:
+
+![alt text][test_full_pipeline]
 
 Here's a [link to my video result](./project_video_lanes.mp4)
 
