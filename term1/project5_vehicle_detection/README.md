@@ -61,6 +61,7 @@ The set of parameters I decided to use in the end is available in cell 9.
 
 #### 3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
 
+Before training the classifier features are scaled in cell 11 using a `StandardScaler()` and the dataset is split in **train** and **test** set.
 I trained a linear SVM in cell 13. The classifier training is performed using 15271 images including both `vehicle` and `non-vehicle` images. Then, 3818 images, including `vehicle` and `non-vehicle` images, are used to test the classifier performances on unseed data.
 At the end the classifier has an accuracy of more than 99%.
 
@@ -70,6 +71,8 @@ At the end the classifier has an accuracy of more than 99%.
 
 In cell 16 the **find_cars** function is available which is used to select a set of windows at different positions and different scales.
 It computes binned color features and color histogram features on those different windows while computes hog features only once for the whole image. After that, it feeds the classifier and gets the classifier output. If the classifier identifies the box as containing a car the box is added to a list of `hot_windows`.
+I preferred using the **find_cars** function instead of a pure sliding window approch since find_cars is faster as a result of computing hog features for the whole image.
+Going back to the choice of parameters for feature extraction I tried different combinations and I found that having more features did not provide significant improvements to the performance of the classifier. Also I didn't want to unnecessarly increase the dimentionality of the dataset.
 
 I realized also doing multiple experiments that the classifier is not very effective with scales lower than 1.50 and higher than 2.00. For this reason I limited searching for windows only using 1.50 and 2.00 scales. Moreover, I searched the original image limiting the region of interest to the area delimited by y values in the range [360, 680]. 
 
@@ -112,5 +115,6 @@ I faced the following problems while working on this project:
 
 
 Possible improvements for the vehicle detection pipeline are:
-1. Finding cars using more coarse grained windows at first so to be able to search the next frame of the video only on limited areas
-2. Tracking objects so to predict their position and search the next frame of the video only in the area where the object is predicted to be (considering that anyway a new car can apper in the frame)
+1. Improving the performance of the pipeline so to run in real-time
+2. Finding cars using more coarse grained windows at first so to be able to search the next frame of the video only on limited areas
+3. Tracking objects so to predict their position and search the next frame of the video only in the area where the object is predicted to be (considering that anyway a new car can apper in the frame)
