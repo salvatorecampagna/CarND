@@ -111,7 +111,7 @@ I faced the following problems while working on this project:
 2. The other problem was reducing the number of false positives. To address this I did the following things:
 * I augmented the dataset including both `vehicle` and `non-vehicle` images. I used images from the Udacity dataset and from the project video itself to add `vehicles`. To add `non-vehicles`, instead, and reduce the number of false positives, I also captured some images and false positive detections from the project video
 * I used the LinearSVC `decision_function()` in **find_cars** to discard car detections too close to the decision boundary. This could result in some correct car detections to be rejected but has the effect of reducing the number of false positives. The pipeline is robust enough, anyway, to tolerate correct detected cars rejected by the additional check done using `decision_function()`
-* I used a kind of `heat map averaging` keeping a list of the most recent heat maps and then thresholding on the sum of all the heat maps in the list. This provides robustness against false positives and has also the effect of smoothing the boxes around detected cars
+* I used a kind of *heat map averaging* keeping a list of the most recent heat maps and then thresholding on the sum of all the heat maps in the list. This provides robustness against false positives and has also the effect of smoothing the boxes around detected cars
 
 
 Possible improvements for the vehicle detection pipeline are:
