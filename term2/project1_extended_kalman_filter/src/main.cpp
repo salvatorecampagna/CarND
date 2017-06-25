@@ -48,16 +48,16 @@ int main()
 
       auto s = hasData(std::string(data));
       if (s != "") {
-      	
+
         auto j = json::parse(s);
 
         std::string event = j[0].get<std::string>();
-        
+
         if (event == "telemetry") {
           // j[1] is the data JSON object
-          
+
           string sensor_measurment = j[1]["sensor_measurement"];
-          
+
           MeasurementPackage meas_package;
           istringstream iss(sensor_measurment);
     	  long long timestamp;
@@ -91,40 +91,40 @@ int main()
           		meas_package.timestamp_ = timestamp;
           }
           float x_gt;
-    	  float y_gt;
-    	  float vx_gt;
-    	  float vy_gt;
-    	  iss >> x_gt;
-    	  iss >> y_gt;
-    	  iss >> vx_gt;
-    	  iss >> vy_gt;
-    	  VectorXd gt_values(4);
-    	  gt_values(0) = x_gt;
-    	  gt_values(1) = y_gt; 
-    	  gt_values(2) = vx_gt;
-    	  gt_values(3) = vy_gt;
-    	  ground_truth.push_back(gt_values);
-          
-          //Call ProcessMeasurment(meas_package) for Kalman filter
-    	  fusionEKF.ProcessMeasurement(meas_package);    	  
+      	  float y_gt;
+      	  float vx_gt;
+      	  float vy_gt;
+      	  iss >> x_gt;
+      	  iss >> y_gt;
+      	  iss >> vx_gt;
+      	  iss >> vy_gt;
+      	  VectorXd gt_values(4);
+      	  gt_values(0) = x_gt;
+      	  gt_values(1) = y_gt;
+      	  gt_values(2) = vx_gt;
+      	  gt_values(3) = vy_gt;
+      	  ground_truth.push_back(gt_values);
 
-    	  //Push the current estimated x,y positon from the Kalman filter's state vector
+            //Call ProcessMeasurment(meas_package) for Kalman filter
+      	  fusionEKF.ProcessMeasurement(meas_package);
 
-    	  VectorXd estimate(4);
+      	  //Push the current estimated x,y positon from the Kalman filter's state vector
 
-    	  double p_x = fusionEKF.ekf_.x_(0);
-    	  double p_y = fusionEKF.ekf_.x_(1);
-    	  double v1  = fusionEKF.ekf_.x_(2);
-    	  double v2 = fusionEKF.ekf_.x_(3);
+      	  VectorXd estimate(4);
 
-    	  estimate(0) = p_x;
-    	  estimate(1) = p_y;
-    	  estimate(2) = v1;
-    	  estimate(3) = v2;
-    	  
-    	  estimations.push_back(estimate);
+      	  double p_x = fusionEKF.ekf_.x_(0);
+      	  double p_y = fusionEKF.ekf_.x_(1);
+      	  double v1  = fusionEKF.ekf_.x_(2);
+      	  double v2 = fusionEKF.ekf_.x_(3);
 
-    	  VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
+      	  estimate(0) = p_x;
+      	  estimate(1) = p_y;
+      	  estimate(2) = v1;
+      	  estimate(3) = v2;
+
+      	  estimations.push_back(estimate);
+
+      	  VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
 
           json msgJson;
           msgJson["estimate_x"] = p_x;
@@ -136,10 +136,10 @@ int main()
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
           // std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
-	  
+
         }
       } else {
-        
+
         std::string msg = "42[\"manual\",{}]";
         ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
       }
@@ -183,90 +183,3 @@ int main()
   }
   h.run();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
