@@ -1,6 +1,7 @@
 #include "kalman_filter.h"
 #include <iostream>
 
+//pi
 #define M_PI 3.14159265358979323846
 
 using Eigen::MatrixXd;
@@ -22,27 +23,23 @@ void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
 
 void KalmanFilter::Predict() {
   MatrixXd Ft = F_.transpose();
+  //predict state variables using the motion model equations
   x_ = F_ * x_;
   P_ = F_ * P_ * Ft + Q_;
-
-  //std::cout << "x_ = " << x_ << std::endl;
-  //std::cout << "P_ = " << P_ << std::endl;
 }
 
 void KalmanFilter::Update(const VectorXd &z) {
+  //measurement vs prediction
   VectorXd y = z - H_ * x_;
   MatrixXd Ht = H_.transpose();
   MatrixXd S = H_ * P_ * Ht + R_;
   MatrixXd Si = S.inverse();
   MatrixXd PHt = P_ * Ht;
   MatrixXd K = PHt * Si;
-
+  //update state variables after measurement
   x_ = x_ + (K * y);
   MatrixXd I = MatrixXd::Identity(x_.size(), x_.size());
   P_ = (I - K * H_) * P_;
-
-  //std::cout << "x_ = " << x_ << std::endl;
-  //std::cout << "P_ = " << P_ << std::endl;
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
@@ -52,22 +49,22 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   float vy = x_(3);
 
   if (fabs(px) < 0.0001) {
-    std::cout << "UpdateEKF () - Error: px: " << px << std::endl;
+    std::cout << "UpdateEKF () - Warning: px: " << px << std::endl;
     px = 0.0001;
   }
 
   if (fabs(py) < 0.0001) {
-    std::cout << "UpdateEKF () - Error: py: " << py << std::endl;
+    std::cout << "UpdateEKF () - Warning: py: " << py << std::endl;
     py = 0.0001;
   }
 
   if (fabs(vx) < 0.0001) {
-    std::cout << "UpdateEKF () - Error: vx: " << vx << std::endl;
+    std::cout << "UpdateEKF () - Warning: vx: " << vx << std::endl;
     vx = 0.0001;
   }
 
   if (fabs(vy) < 0.0001) {
-    std::cout << "UpdateEKF () - Error: vy: " << vy << std::endl;
+    std::cout << "UpdateEKF () - Warning: vy: " << vy << std::endl;
     vy = 0.0001;
   }
 
@@ -92,7 +89,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   hx << rho, phi, rho_dot;
 
   VectorXd y = z - hx;
-  //adjust phi in range (-pi, pi)
+  //adjust phi (y(1)) in range (-pi, pi)
   while (y(1) < -M_PI)
     y(1) += 2 * M_PI;
   while (y(1) > M_PI)
@@ -103,11 +100,8 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   MatrixXd Si = S.inverse();
   MatrixXd PHt = P_ * Ht;
   MatrixXd K = PHt * Si;
-
+  //update state variables after measurement
   x_ = x_ + (K * y);
   MatrixXd I = MatrixXd::Identity(x_.size(), x_.size());
   P_ = (I - K * H_) * P_;
-
-  //std::cout << "x_ = " << x_ << std::endl;
-  //std::cout << "P_ = " << P_ << std::endl;
 }
