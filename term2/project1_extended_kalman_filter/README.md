@@ -1,4 +1,4 @@
-# Extended Kalman Filter Project Starter Code
+# Extended Kalman Filter Project
 Self-Driving Car Engineer Nanodegree Program
 
 In this project a kalman filter is used to estimate the state of a moving object of interest with noisy LIDAR and RADAR measurements.
