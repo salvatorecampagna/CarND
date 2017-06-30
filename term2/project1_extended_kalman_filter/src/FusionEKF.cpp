@@ -117,41 +117,46 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
  //compute time delta
  dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;
- dt2 = dt * dt;
- dt3 = dt2 * dt;
- dt4 = dt3 * dt;
 
- //update state transition matrix to account for time delta (dt)
- ekf_.F_ = MatrixXd(4, 4);
- ekf_.F_ << 1, 0, dt, 0,
-            0, 1, 0, dt,
-            0, 0, 1, 0,
-            0, 0, 0, 1;
+ //do nothing if time delta is too small
+ if ( dt > 0.001 )
+ {
+   dt2 = dt * dt;
+   dt3 = dt2 * dt;
+   dt4 = dt3 * dt;
 
-  //update the process noise covariance marix
-  ekf_.Q_ = MatrixXd(4, 4);
-  ekf_.Q_ <<  dt4 / 4.0 * noise_ax, 0.0, dt3 / 2.0 * noise_ax, 0.0,
-              0.0, dt4 / 4.0 * noise_ay, 0.0, dt3 / 2.0 * noise_ay,
-              dt3 / 2.0 * noise_ax, 0.0, dt2 * noise_ax, 0.0,
-              0.0, dt3 / 2.0 * noise_ay, 0.0, dt2 * noise_ay;
+   //update state transition matrix to account for time delta (dt)
+   ekf_.F_ = MatrixXd(4, 4);
+   ekf_.F_ << 1, 0, dt, 0,
+              0, 1, 0, dt,
+              0, 0, 1, 0,
+              0, 0, 0, 1;
 
-  //predict (px, py, vx, vy) using the Kalman Filter motion model equaton
-  ekf_.Predict();
+    //update the process noise covariance marix
+    ekf_.Q_ = MatrixXd(4, 4);
+    ekf_.Q_ <<  dt4 / 4.0 * noise_ax, 0.0, dt3 / 2.0 * noise_ax, 0.0,
+                0.0, dt4 / 4.0 * noise_ay, 0.0, dt3 / 2.0 * noise_ay,
+                dt3 / 2.0 * noise_ax, 0.0, dt2 * noise_ax, 0.0,
+                0.0, dt3 / 2.0 * noise_ay, 0.0, dt2 * noise_ay;
 
-  /*****************************************************************************
-   *  Update
-   ****************************************************************************/
+    //predict (px, py, vx, vy) using the Kalman Filter motion model equaton
+    ekf_.Predict();
 
-  if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
-    //compute the Jacobian matrix
-    Hj_ = tools.CalculateJacobian(ekf_.x_);
-    ekf_.H_ = Hj_;
-    ekf_.R_ = R_radar_;
-    ekf_.UpdateEKF(measurement_pack.raw_measurements_);
-  } else {
-    ekf_.H_ = H_laser_;
-    ekf_.R_ = R_laser_;
-    ekf_.Update(measurement_pack.raw_measurements_);
+    /*****************************************************************************
+     *  Update
+     ****************************************************************************/
+
+    if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
+      //compute the Jacobian matrix
+      Hj_ = tools.CalculateJacobian(ekf_.x_);
+      ekf_.H_ = Hj_;
+      ekf_.R_ = R_radar_;
+      ekf_.UpdateEKF(measurement_pack.raw_measurements_);
+    } else {
+      ekf_.H_ = H_laser_;
+      ekf_.R_ = R_laser_;
+      ekf_.Update(measurement_pack.raw_measurements_);
+    }
   }
 
   previous_timestamp_ = measurement_pack.timestamp_;
