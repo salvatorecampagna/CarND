@@ -32,10 +32,10 @@ OUTPUT: values provided by the CC++ program to the simulator
 
 ["estimate_x"] <= kalman filter estimated position x
 ["estimate_y"] <= kalman filter estimated position y
-["rmse_x"] <= Root Mean Squared error on px
-["rmse_y"] <= Root mean squared error on py
-["rmse_vx"] <= Root mean squared error on vx
-["rmse_vy"] <= Root mean squared error on vy
+["rmse_x"] <= Root Mean Square error on px
+["rmse_y"] <= Root mean square error on py
+["rmse_vx"] <= Root mean square error on vx
+["rmse_vy"] <= Root mean square error on vy
 
 ---
 
