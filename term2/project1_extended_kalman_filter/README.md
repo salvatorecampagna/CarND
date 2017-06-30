@@ -59,3 +59,11 @@ OUTPUT: values provided by the CC++ program to the simulator
 3. Compile: `cmake .. && make`
    * On windows, you may need to run: `cmake .. -G "Unix Makefiles" && make`
 4. Run it: `./ExtendedKF `
+
+## Simulation
+
+1. Run the simulator (see above for download link)
+2. Select 'Project 1/2: EKF and UKF'
+3. Select Dataset1 or Dataset2 (each dataset includes LIDAR and RADAR measurements)
+4. Hit 'Start' button to start Simulation
+5. Observe RMSE on X, Y, VX and VY
