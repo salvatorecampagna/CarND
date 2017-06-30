@@ -16,26 +16,25 @@ Once the install for uWebSocketIO is complete, the main program can be built and
 4. make
 5. ./ExtendedKF
 
-Implementation of the sensor fusion logic is available in: src/FusionEKF.cpp, src/FusionEKF.h.
-The Kalman Filter implementation is available in: kalman_filter.cpp, kalman_filter.h.
-Additional utility functions are provided through: tools.cpp, and tools.h
+Implementation of the sensor fusion logic is available in `src/FusionEKF.cpp` and `src/FusionEKF.h`.
+The Kalman Filter implementation is available in `kalman_filter.cpp` and `kalman_filter.h`.
+Additional utility functions are provided in `tools.cpp` and `tools.h`.
+The program `main.cpp` implements the main logic to feed the Kalman Filter with data and collect results.
 
-The program main.cpp implements the main logic to feed the Kalman Filter with data and collect results.
-
-Here is the main protcol that main.cpp uses for uWebSocketIO in communicating with the simulator.
+Here is the main protocol that `main.cpp` uses for uWebSocketIO in communicating with the simulator.
 
 INPUT: values provided by the simulator to the C++ program
 
-["sensor_measurement"] => the measurement that the simulator observed (either LIDAR or RADAR)
+* ["sensor_measurement"] => the measurement that the simulator observed (either LIDAR or RADAR)
 
-OUTPUT: values provided by the CC++ program to the simulator
+OUTPUT: values provided by the C++ program to the simulator
 
-["estimate_x"] <= Kalman filter estimated position x
-["estimate_y"] <= Kalman filter estimated position y
-["rmse_x"] <= Root Mean Square error on px
-["rmse_y"] <= Root mean square error on py
-["rmse_vx"] <= Root mean square error on vx
-["rmse_vy"] <= Root mean square error on vy
+* ["estimate_x"] <= Kalman filter estimated position x
+* ["estimate_y"] <= Kalman filter estimated position y
+* ["rmse_x"] <= Root Mean Square error on px
+* ["rmse_y"] <= Root mean square error on py
+* ["rmse_vx"] <= Root mean square error on vx
+* ["rmse_vy"] <= Root mean square error on vy
 
 ---
 
@@ -54,7 +53,7 @@ OUTPUT: values provided by the CC++ program to the simulator
 
 ## Basic Build Instructions
 
-1. Clone this repo.
+1. Clone this repo
 2. Make a build directory: `mkdir build && cd build`
 3. Compile: `cmake .. && make`
    * On windows, you may need to run: `cmake .. -G "Unix Makefiles" && make`
