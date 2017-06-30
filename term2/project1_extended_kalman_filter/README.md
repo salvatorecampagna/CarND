@@ -1,7 +1,7 @@
 # Extended Kalman Filter Project
 Self-Driving Car Engineer Nanodegree Program
 
-In this project a kalman filter is used to estimate the state of a moving object of interest with noisy LIDAR and RADAR measurements.
+In this project a Kalman Filter is used to estimate the state of a moving object of interest with noisy LIDAR and RADAR measurements.
 
 This project requires the Term 2 Simulator which can be downloaded [here](https://github.com/udacity/self-driving-car-sim/releases)
 
@@ -30,8 +30,8 @@ INPUT: values provided by the simulator to the C++ program
 
 OUTPUT: values provided by the CC++ program to the simulator
 
-["estimate_x"] <= kalman filter estimated position x
-["estimate_y"] <= kalman filter estimated position y
+["estimate_x"] <= Kalman filter estimated position x
+["estimate_y"] <= Kalman filter estimated position y
 ["rmse_x"] <= Root Mean Square error on px
 ["rmse_y"] <= Root mean square error on py
 ["rmse_vx"] <= Root mean square error on vx
