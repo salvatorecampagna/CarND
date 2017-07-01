@@ -1,15 +1,12 @@
-**Traffic Sign Recognition**
+# Traffic Sign Recognition
 ---
 
-**Build a Traffic Sign Recognition Project**
-
-The goals / steps of this project are the following:
+Goals of this project:
 * Load the data set (see below for links to the project data set)
 * Explore, summarize and visualize the data set
 * Design, train and test a model architecture
 * Use the model to make predictions on new images
 * Analyze the softmax probabilities of the new images
-* Summarize the results with a written report
 
 
 [//]: # (Image References)
@@ -26,17 +23,19 @@ The goals / steps of this project are the following:
 ## Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
 ---
 This file describes the project and all the steps carried out to implement a Traffic Sign classifier using a Convolutional Neural Network implemented in TensorFlow.
-The project itself is provided as a Python Jupyter Notebook available at the following link: [project code](https://github.com/salvatorecampagna/CarND/blob/master/term1/project2_traffic_sign_classifier/Traffic_Sign_Classifier.ipynb)
+The project itself is provided as a Python Jupyter Notebook available at: [project code](https://github.com/salvatorecampagna/CarND/blob/master/term1/project2_traffic_sign_classifier/Traffic_Sign_Classifier.ipynb)
 
-The Jupyter Notebook is exported also as an HTML file and is available at the following link: [project html](https://github.com/salvatorecampagna/CarND/blob/master/term1/project2_traffic_sign_classifier/Traffic_Sign_Classifier.html)
+The Jupyter Notebook is exported also as an HTML file and is available at: [project html](https://github.com/salvatorecampagna/CarND/blob/master/term1/project2_traffic_sign_classifier/Traffic_Sign_Classifier.html)
 
 ## Data Set Summary & Exploration
 
 ***Provide a basic summary of the data set and identify where in your code the summary was done. In the code, the analysis should be done using python, numpy and/or pandas methods rather than hardcoding results manually.***
 
-The Python code providing basic summary of the data is contained in the 3rd code cell of the Jupyter notebook. I reported the shapes of the datasets, in such a way to understand how datasets are organized and how many samples are available for training, validation and testing of the classifier.
+The Python code providing basic summary of the data is contained in the cell 3 of the Jupyter notebook. I reported the shapes of the datasets, in such a way to understand how datasets are organized and how many samples are available for training, validation and testing of the classifier.
 
-Summary statistics of the traffic signs data set:
+The dataset includes images of traffic signs coming from the *German Traffic Sign Database* available at: [GTSRB](http://benchmark.ini.rub.de/?section=gtsrb&subsection=news)
+
+Here are some summary statistics of the traffic signs dataset:
 
 + The size of the training set is 34799
 + The size of the test set is 12630
