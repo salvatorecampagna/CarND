@@ -82,6 +82,9 @@ public:
   ///* Lidar measurement covariance matrix
   MatrixXd R_lidar_;
 
+  ///* Lidar measurement matrix
+  MatrixXd H_lidar_;
+
   /**
    * Constructor
    */

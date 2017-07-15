@@ -253,76 +253,19 @@ void UKF::Prediction(double delta_t) {
  * @param {MeasurementPackage} meas_package
  */
 void UKF::UpdateLidar(MeasurementPackage meas_package) {
-  /* Lidar update: UKF equations give the same result of a Standard
-     Kalman Filter if the measurement transformation is linear */
-  double px, py;
-
-  // Lidar measurement space size
-  int n_z = 2;
-
-  // Lidar sigma point matrix
-  MatrixXd Zsig = MatrixXd(2, 2 * n_aug_ + 1);
-
-  //transform sigma points into measurement space
-  for (int i = 0; i < 2 * n_aug_ + 1; i++)
-  {
-    // Extract values from predicted sigma points matrix for better readibility
-    px = Xsig_pred_(0, i);
-    py = Xsig_pred_(1, i);
-
-    // Measurement model
-    Zsig(0, i) = px;
-    Zsig(1, i) = py;
-  }
-
-  // Mean predicted measurement
-  VectorXd z_pred = VectorXd(n_z);
-  z_pred.fill(0.0);
-  for (int i = 0; i < 2 * n_aug_ + 1; i++)
-      z_pred = z_pred + weights_(i) * Zsig.col(i);
-
-  // Measurement covariance matrix S
-  MatrixXd S = MatrixXd(n_z, n_z);
-  S.fill(0.0);
-  for (int i = 0; i < 2 * n_aug_ + 1; i++)
-  {
-    // Residual
-    VectorXd z_diff = Zsig.col(i) - z_pred;
-    S = S + weights_(i) * z_diff * z_diff.transpose();
-  }
-
-  //add measurement noise covariance matrix
-  R_lidar_ << std_laspx_ * std_laspx_, 0.0,
-          0.0, std_laspy_ * std_laspy_;
-  S = S + R_lidar_;
-
-  // Calculate cross correlation matrix
-  MatrixXd Tc = MatrixXd(n_x_, n_z);
-  Tc.fill(0.0);
-  for (int i = 0; i < 2 * n_aug_ + 1; i++)
-  {
-    // Residual
-    VectorXd z_diff = Zsig.col(i) - z_pred;
-
-    // State difference
-    VectorXd x_diff = Xsig_pred_.col(i) - x_;
-    //angle normalization
-    while (x_diff(3)> M_PI) x_diff(3) -= 2.0 * M_PI;
-    while (x_diff(3)< -M_PI) x_diff(3) += 2.0 * M_PI;
-
-    Tc = Tc + weights_(i) * x_diff * z_diff.transpose();
-  }
-
-  //Kalman gain K;
-  MatrixXd K = Tc * S.inverse();
-
-  // Residual
+  /* Lidar update: the Lidar measurement model is linear. As a result a
+     Standard Kalman filter is enough to to the update */
   VectorXd z = meas_package.raw_measurements_;
-  VectorXd z_diff = z - z_pred;
-
-  // Update state mean and covariance matrix
-  x_ = x_ + K * z_diff;
-  P_ = P_ - K * S * K.transpose();
+  VectorXd y = z - H_lidar_ * x_;
+  MatrixXd Ht = H_lidar_.transpose();
+  MatrixXd S = H_lidar_ * P_ * Ht + R_lidar_;
+  MatrixXd Si = S.inverse();
+  MatrixXd PHt = P_ * Ht;
+  MatrixXd K = PHt * Si;
+  //update state variables after measurement
+  x_ = x_ + (K * y);
+  MatrixXd I = MatrixXd::Identity(x_.size(), x_.size());
+  P_ = (I - K * H_lidar_) * P_;
 }
 
 /**
