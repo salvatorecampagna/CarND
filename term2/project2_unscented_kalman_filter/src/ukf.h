@@ -76,6 +76,9 @@ public:
   // Augmented sigma points (cached for efficiency)
   MatrixXd Xsig_aug_;
 
+  ///* Radar measurement covariance matrix
+  MatrixXd R_radar_;
+
   /**
    * Constructor
    */
