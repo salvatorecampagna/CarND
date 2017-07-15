@@ -85,6 +85,12 @@ public:
   ///* Lidar measurement matrix
   MatrixXd H_lidar_;
 
+  ///* Lidar NIS
+  double NIS_lidar_;
+
+  ///* radar NIS
+  double NIS_radar_;
+
   /**
    * Constructor
    */
