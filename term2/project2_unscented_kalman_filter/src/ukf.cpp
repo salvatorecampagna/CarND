@@ -75,6 +75,11 @@ UKF::UKF() {
 
   // Lidar measurement covariance matrix
   R_lidar_ = MatrixXd(2, 2);
+
+  // Initialize the Lidar measurement matrix H_laser
+  H_lidar_ = MatrixXd(2, 4);
+  H_lidar_ << 1, 0, 0, 0,
+              0, 1, 0, 0;
 }
 
 UKF::~UKF() {}
