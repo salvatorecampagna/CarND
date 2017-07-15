@@ -94,8 +94,6 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 
   if (!is_initialized_)
   {
-    x_ << 1.0, 1.0, 1.0, 1.0, 1.0;
-
     if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
       //range
       rho = meas_package.raw_measurements_[0];
