@@ -67,6 +67,14 @@ public:
   ///* Sigma point spreading parameter
   double lambda_;
 
+  ///* Augmented state vector (cached for efficiency)
+  VectorXd x_aug_;
+
+  ///* Augmented process covariance matrix (cached for efficiency)
+  MatrixXd P_aug_;
+
+  // Augmented sigma points (cached for efficiency)
+  MatrixXd Xsig_aug_;
 
   /**
    * Constructor

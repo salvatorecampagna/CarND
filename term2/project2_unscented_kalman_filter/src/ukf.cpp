@@ -60,6 +60,15 @@ UKF::UKF() {
 
   // Weights for mean and covariance calculation
   weights_ = VectorXd(2 * n_aug_ + 1);
+
+  // Augmented state vector
+  x_aug_ = VectorXd(n_aug_);
+
+  // Augmented process covariance matrix
+  P_aug_ = MatrixXd(n_aug_, n_aug_);
+
+  // Augmented sigma points
+  Xsig_aug_ = MatrixXd(n_aug_, 2 * n_aug_ + 1);
 }
 
 UKF::~UKF() {}
@@ -70,6 +79,7 @@ UKF::~UKF() {}
  */
 void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   double rho, phi, rho_dot, px, py, v, yaw, yawd;
+  double delta_t;
 
   if (!is_initialized_)
   {
@@ -112,7 +122,18 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
     return;
   }
 
+  delta_t = (meas_package.timestamp_ - time_us_) / 1000000.0;
 
+  if (meas_package.sensor_type_ == MeasurementPackage::LASER)
+  {
+    UpdateLidar(meas_package);
+  }
+  else if (meas_package.sensor_type_ == MeasurementPackage::RADAR)
+  {
+    UpdateRadar(meas_package);
+  }
+
+  time_us_ = meas_package.timestamp_;
 }
 
 /**
@@ -121,12 +142,99 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
  * measurement and this one.
  */
 void UKF::Prediction(double delta_t) {
-  /**
-  TODO:
+  double px, py, v, yaw, yawd, nu_a, nu_yawdd;
+  double px_next, py_next, v_next, yaw_next, yawd_next;
 
-  Complete this function! Estimate the object's location. Modify the state
-  vector, x_. Predict sigma points, the state, and the state covariance matrix.
-  */
+  /* Create sigma points */
+
+  // Create the augmented state vector
+  // x_aug = [px, py, v, yaw, yawd, nu_a, nu_yawdd] (size: 7)
+  x_aug_.head(n_x_) = x_;
+  x_aug_(n_x_) = 0.0;
+  x_aug_(n_x_ + 1) = 0.0;
+
+  // Create the augmented process covariance matrix
+  P_aug_.fill(0.0);
+  P_aug_.topLeftCorner(n_x_, n_x_) = P_;
+  P_aug_(n_x_, n_x_) = std_a_ * std_a_;
+  P_aug_(n_x_ + 1, n_x_ + 1) = std_yawdd_ * std_yawdd_;
+
+  // Create the square root matrix
+  MatrixXd L = P_aug_.llt().matrixL();
+
+  // Create augmented sigma points (matrix 7 x 15)
+  Xsig_aug_.col(0) = x_aug_;
+  for (int i = 0; i < n_aug_; i++)
+  {
+    Xsig_aug_.col(i + 1) = x_aug_ + sqrt(lambda_ + n_aug_) * L.col(i);
+    Xsig_aug_.col(i + 1 + n_aug_) = x_aug_ - sqrt(lambda_ + n_aug_) * L.col(i);
+  }
+
+  for (int i = 0; i < 2 * n_aug_ + 1; i++)
+  {
+    // Extract state variables from the augmented state for better readability
+    px = Xsig_aug_(0, i);
+    py = Xsig_aug_(1, i);
+    v = Xsig_aug_(2, i);
+    yaw = Xsig_aug_(3, i);
+    yawd = Xsig_aug_(4, i);
+    nu_a = Xsig_aug_(5, i);
+    nu_yawdd = Xsig_aug_(6, i);
+
+    // Handle division by zero (driving on a straight line)
+    if (fabs(yawd) > 0.001) {
+        px_next = px + v/yawd * ( sin (yaw + yawd * delta_t) - sin(yaw));
+        py_next = py + v/yawd * ( cos(yaw) - cos(yaw + yawd * delta_t) );
+    }
+    else {
+        px_next = px + v * delta_t * cos(yaw);
+        py_next = py + v * delta_t * sin(yaw);
+    }
+
+    // CTRV model constant velocity
+    v_next = v;
+    yaw_next = yaw + yawd * delta_t;
+    // CTRV model constant acceleration
+    yawd_next = yawd;
+
+    // Add noise
+    px_next = px_next + 0.5 * nu_a * delta_t * delta_t * cos(yaw);
+    py_next = py_next + 0.5 * nu_a * delta_t * delta_t * sin(yaw);
+    v_next = v_next + nu_a * delta_t;
+    yaw_next = yaw_next + 0.5 * nu_yawdd * delta_t * delta_t;
+    yawd_next = yawd_next + nu_yawdd * delta_t;
+
+    //write predicted sigma point into right column
+    Xsig_pred_(0, i) = px_next;
+    Xsig_pred_(1, i) = py_next;
+    Xsig_pred_(2, i) = v_next;
+    Xsig_pred_(3, i) = yaw_next;
+    Xsig_pred_(4, i) = yawd_next;
+  }
+
+  /* Predict sigma points */
+
+  // Set weight
+  weights_(0) = lambda_ / (lambda_ + n_aug_);
+  for (int i = 1; i < 2 * n_aug_ + 1; i++)
+    weights_(i) = 0.5/(n_aug_ + lambda_);
+
+  // Predicted state mean
+  x_.fill(0.0);
+  for (int i = 0; i < 2 * n_aug_ + 1; i++)
+    x_ = x_ + weights_(i) * Xsig_pred_.col(i);
+
+  // Predicted state covariance matrix
+  P_.fill(0.0);
+  for (int i = 0; i < 2 * n_aug_ + 1; i++)
+  {
+    VectorXd x_diff = Xsig_pred_.col(i) - x_;
+    // Normalize angles between -PI and PI
+    while (x_diff(3)> M_PI) x_diff(3) -= 2.0 * M_PI;
+    while (x_diff(3)< -M_PI) x_diff(3) += 2.0 *M_PI;
+
+    P_ = P_ + weights_(i) * x_diff * x_diff.transpose() ;
+  }
 }
 
 /**
