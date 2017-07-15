@@ -79,6 +79,9 @@ public:
   ///* Radar measurement covariance matrix
   MatrixXd R_radar_;
 
+  ///* Lidar measurement covariance matrix
+  MatrixXd R_lidar_;
+
   /**
    * Constructor
    */
