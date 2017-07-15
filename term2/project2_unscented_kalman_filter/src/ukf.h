@@ -73,7 +73,7 @@ public:
   ///* Augmented process covariance matrix (cached for efficiency)
   MatrixXd P_aug_;
 
-  // Augmented sigma points (cached for efficiency)
+  ///* Augmented sigma points (cached for efficiency)
   MatrixXd Xsig_aug_;
 
   ///* Radar measurement covariance matrix
