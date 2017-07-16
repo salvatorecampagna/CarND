@@ -19,6 +19,7 @@ UKF::UKF() {
 
   // initial state vector
   x_ = VectorXd(5);
+  x_ << 0, 0, 0, 0, 0;
 
   // initial covariance matrix
   P_ = MatrixXd::Identity(5, 5);
