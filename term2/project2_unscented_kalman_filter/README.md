@@ -71,7 +71,7 @@ Once the install for uWebSocketIO is complete, the main program can be built and
 2. cd build
 3. cmake ..
 4. make
-5. ./ExtendedKF
+5. ./UnscentedKF
 
 The Unscented Kalman Filter implementation is available in `src/ukf.cpp` and `src/ukf.h`.
 Additional utility functions are provided in `tools.cpp` and `tools.h`.
