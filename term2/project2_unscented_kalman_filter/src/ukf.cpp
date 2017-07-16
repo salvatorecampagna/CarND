@@ -101,12 +101,16 @@ UKF::UKF() {
 
   // Open Radar NIS file stream
   NIS_radar_os_.open("nis_radar.txt");
+
+  // Open estimation file stream
+  estimation_os_.open("estimations.txt");
 }
 
 UKF::~UKF()
 {
   NIS_lidar_os_.close();
   NIS_radar_os_.close();
+  estimation_os_.close();
 }
 
 /**
@@ -182,6 +186,8 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       UpdateRadar(meas_package);
     }
   }
+
+  estimation_os_ << x_[0] << ", " << x_[1] << ", " << x_[2] << ", " << x_[3] << ", " << x_[4] << std::endl;
 }
 
 /**

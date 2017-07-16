@@ -97,6 +97,9 @@ public:
   ///* Radar NIS file stream
   std::ofstream NIS_radar_os_;
 
+  ///* State vector estimation file stream
+  std::ofstream estimation_os_;
+
   /**
    * Constructor
    */
