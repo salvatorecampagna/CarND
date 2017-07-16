@@ -258,9 +258,13 @@ void UKF::Prediction(double delta_t) {
   /* Predict state mean and state covariance matrix */
 
   // Set weight
-  weights_(0) = lambda_ / (lambda_ + n_aug_);
+  double weight_0 = lambda_ / (lambda_ + n_aug_);
+  weights_(0) = weight_0;
   for (int i = 1; i < 2 * n_aug_ + 1; i++)
-    weights_(i) = 0.5/(n_aug_ + lambda_);
+  {
+    double weight = 0.5 / (n_aug_ + lambda_);
+    weights_(i) = weight;
+  }
 
   // Predicted state mean
   x_.fill(0.0);
