@@ -276,10 +276,14 @@ void UKF::Prediction(double delta_t) {
     VectorXd x_diff = Xsig_pred_.col(i) - x_;
     // Normalize angles between -PI and PI
     while (x_diff(3)> M_PI) x_diff(3) -= 2.0 * M_PI;
-    while (x_diff(3)< -M_PI) x_diff(3) += 2.0 *M_PI;
+    while (x_diff(3)< -M_PI) x_diff(3) += 2.0 * M_PI;
 
     P_ = P_ + weights_(i) * x_diff * x_diff.transpose() ;
   }
+
+  std::cout << "UKF::Predict" << std::endl;
+  std::cout << x_ << std::endl;
+  std::cout << P_ << std::endl;
 }
 
 /**
@@ -375,14 +379,14 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
     // Residual
     VectorXd z_diff = Zsig.col(i) - z_pred;
     // Normalize angle
-    while (z_diff(1)> M_PI) z_diff(1) -= 2.0 * M_PI;
-    while (z_diff(1)< -M_PI) z_diff(1) += 2.0 * M_PI;
+    while (z_diff(1) > M_PI) z_diff(1) -= 2.0 * M_PI;
+    while (z_diff(1) < -M_PI) z_diff(1) += 2.0 * M_PI;
 
     // State difference
     VectorXd x_diff = Xsig_pred_.col(i) - x_;
     //angle normalization
-    while (x_diff(3)> M_PI) x_diff(3) -= 2.0 * M_PI;
-    while (x_diff(3)< -M_PI) x_diff(3) += 2.0 * M_PI;
+    while (x_diff(3) > M_PI) x_diff(3) -= 2.0 * M_PI;
+    while (x_diff(3) < -M_PI) x_diff(3) += 2.0 * M_PI;
 
     Tc = Tc + weights_(i) * x_diff * z_diff.transpose();
   }
