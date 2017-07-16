@@ -87,9 +87,19 @@ UKF::UKF() {
 
   // Initialize Radar NIS
   NIS_radar_ = 0.0;
+
+  // Open Lidar NIS file stream
+  NIS_lidar_os_.open("nis_lidar.txt");
+
+  // Open Radar NIS file stream
+  NIS_radar_os_.open("nis_radar.txt");
 }
 
-UKF::~UKF() {}
+UKF::~UKF()
+{
+  NIS_lidar_os_.close();
+  NIS_radar_os_.close();
+}
 
 /**
  * @param {MeasurementPackage} meas_package The latest measurement data of
@@ -273,6 +283,8 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   P_ = (I - K * H_lidar_) * P_;
 
   NIS_lidar_ = y.transpose() * Si * y;
+
+  NIS_lidar_os_ << NIS_lidar_ << std::endl;
 }
 
 /**
@@ -367,4 +379,6 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   P_ = P_ - K * S * K.transpose();
 
   NIS_radar_ = z_diff.transpose() * S.inverse() * z_diff;
+
+  NIS_radar_os_ << NIS_radar_ << std::endl;
 }

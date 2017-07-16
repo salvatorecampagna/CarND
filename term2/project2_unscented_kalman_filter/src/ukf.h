@@ -91,6 +91,12 @@ public:
   ///* radar NIS
   double NIS_radar_;
 
+  ///* Lidar NIS file stream
+  std::ofstream NIS_lidar_os_;
+
+  ///* Radar NIS file stream
+  std::ofstream NIS_radar_os_;
+
   /**
    * Constructor
    */
