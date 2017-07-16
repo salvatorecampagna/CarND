@@ -73,9 +73,14 @@ UKF::UKF() {
 
   // Radar measurement covariance matrix
   R_radar_ = MatrixXd(3, 3);
+  R_radar_ << std_radr_ * std_radr_, 0.0, 0.0,
+              0.0, std_radphi_ * std_radphi_, 0.0,
+              0.0, 0.0, std_radrd_ * std_radrd_;
 
   // Lidar measurement covariance matrix
   R_lidar_ = MatrixXd(2, 2);
+  R_lidar_ << std_laspx_ * std_laspx_, 0.0,
+              0.0, std_laspy_ * std_laspy_;
 
   // Initialize the Lidar measurement matrix H_laser
   H_lidar_ = MatrixXd(2, 5);
@@ -361,9 +366,6 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   }
 
   //add measurement noise covariance matrix
-  R_radar_ << std_radr_ * std_radr_, 0.0, 0.0,
-          0.0, std_radphi_ * std_radphi_, 0.0,
-          0.0, 0.0, std_radrd_ * std_radrd_;
   S = S + R_radar_;
 
   // Calculate cross correlation matrix
