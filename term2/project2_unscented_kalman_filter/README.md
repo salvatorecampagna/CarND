@@ -134,6 +134,10 @@ Consistency on NIS value confirms realistic estimations.
 ![alt text][radar_nis_only_radar_dataset1]
 ![alt text][radar_nis_only_radar_dataset2]
 
+## Conclusion
+
+In the scenario in which both the Lidar and Radar are used the RMSE is quite low, also if we compare it to results obtained by an Extended Kalman Filter. As a result, we can conclude that estimation of the position of a moving object by means of an Unscented Kalman Filter is quite accurate.
+
 
 ## Other Important Dependencies
 
