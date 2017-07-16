@@ -163,20 +163,15 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   delta_t = (meas_package.timestamp_ - time_us_) / 1000000.0;
   time_us_ = meas_package.timestamp_;
 
-  // Ignore measurement if time delta is too small
-  if (delta_t > 0.001)
+  Prediction(delta_t);
+
+  if (meas_package.sensor_type_ == MeasurementPackage::LASER)
   {
-
-    Prediction(delta_t);
-
-    if (meas_package.sensor_type_ == MeasurementPackage::LASER)
-    {
-      UpdateLidar(meas_package);
-    }
-    else if (meas_package.sensor_type_ == MeasurementPackage::RADAR)
-    {
-      UpdateRadar(meas_package);
-    }
+    UpdateLidar(meas_package);
+  }
+  else if (meas_package.sensor_type_ == MeasurementPackage::RADAR)
+  {
+    UpdateRadar(meas_package);
   }
 
   estimation_os_ << x_[0] << ", " << x_[1] << ", " << x_[2] << ", " << x_[3] << ", " << x_[4] << std::endl;
