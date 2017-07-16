@@ -123,7 +123,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 
   if (!is_initialized_)
   {
-    if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
+    if (use_radar_ && meas_package.sensor_type_ == MeasurementPackage::RADAR) {
       // Range
       rho = meas_package.raw_measurements_[0];
       // Bearing
@@ -137,7 +137,17 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       yaw = 0.0;
       yawd = 0.0;
 
-    } else if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
+      // Initialize state variable using the first measurement - radar
+      x_ << px, py, v, yaw, yawd;
+      estimation_os_ << x_[0] << ", " << x_[1] << ", " << x_[2] << ", " << x_[3] << ", " << x_[4] << std::endl;
+
+      // Update time
+      time_us_ = meas_package.timestamp_;
+
+      // Done initializing, no need to predict or update
+      is_initialized_ = true;
+
+    } else if (use_laser_ && meas_package.sensor_type_ == MeasurementPackage::LASER) {
       // Position (x)
       px = meas_package.raw_measurements_[0];
       // Position (y)
@@ -147,16 +157,17 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       yaw = 0.0;
       yawd = 0.0;
 
+      // Initialize state variable using the first measurement - radar
+      x_ << px, py, v, yaw, yawd;
+      estimation_os_ << x_[0] << ", " << x_[1] << ", " << x_[2] << ", " << x_[3] << ", " << x_[4] << std::endl;
+
+      // Update time
+      time_us_ = meas_package.timestamp_;
+
+      // Done initializing, no need to predict or update
+      is_initialized_ = true;
+
     }
-
-    // Initialize state variable using the first measurement - radar
-    x_ << px, py, v, yaw, yawd;
-
-    // Update time
-    time_us_ = meas_package.timestamp_;
-
-    // Done initializing, no need to predict or update
-    is_initialized_ = true;
     return;
   }
 
@@ -165,11 +176,11 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 
   Prediction(delta_t);
 
-  if (meas_package.sensor_type_ == MeasurementPackage::LASER)
+  if (use_laser_ && meas_package.sensor_type_ == MeasurementPackage::LASER)
   {
     UpdateLidar(meas_package);
   }
-  else if (meas_package.sensor_type_ == MeasurementPackage::RADAR)
+  else if (use_radar_ && meas_package.sensor_type_ == MeasurementPackage::RADAR)
   {
     UpdateRadar(meas_package);
   }
