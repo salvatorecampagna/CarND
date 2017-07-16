@@ -37,14 +37,10 @@ The Unscented Kalman Filter estimates the state of the tracked object going thro
 * Prediction
 * Update
 
-Prediction:
-
 The prediction step goes through the following three steps:
 * Sigma points generation
 * Sigma points prediction
 * Process mean and covariance matrix prediction
-
-Update:
 
 The update step goes through the following three steps:
 * Prediction measurement
