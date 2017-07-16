@@ -93,6 +93,7 @@ OUTPUT: values provided by the C++ program to the simulator
 * ["rmse_vy"] <= Root Mean Squared error on vy
 
 RMSE values measure the accuracy of the filter in estimating the position and velocity of the object. The values are derived by comparing the estimation provided by the filter against the ground thruth data available by means of simulated Lidar and Radar data.
+
 ---
 
 ## Project results
