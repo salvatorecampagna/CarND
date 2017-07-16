@@ -195,14 +195,14 @@ void UKF::Prediction(double delta_t) {
   // Create the augmented state vector
   // x_aug = [px, py, v, yaw, yawd, nu_a, nu_yawdd] (size: 7)
   x_aug_.head(n_x_) = x_;
-  x_aug_(n_x_) = 0.0;
-  x_aug_(n_x_ + 1) = 0.0;
+  x_aug_(5) = 0.0;
+  x_aug_(6) = 0.0;
 
   // Create the augmented process covariance matrix
   P_aug_.fill(0.0);
-  P_aug_.topLeftCorner(n_x_, n_x_) = P_;
-  P_aug_(n_x_, n_x_) = std_a_ * std_a_;
-  P_aug_(n_x_ + 1, n_x_ + 1) = std_yawdd_ * std_yawdd_;
+  P_aug_.topLeftCorner(5, 5) = P_;
+  P_aug_(5, 5) = std_a_ * std_a_;
+  P_aug_(6, 6) = std_yawdd_ * std_yawdd_;
 
   // Create the square root matrix
   MatrixXd L = P_aug_.llt().matrixL();
