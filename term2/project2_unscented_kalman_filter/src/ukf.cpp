@@ -130,7 +130,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       phi = meas_package.raw_measurements_[1];
       // Radial velocity
       rho_dot = meas_package.raw_measurements_[2];
-      // Convert polar to cartesian
+      // Coordinates convertion from polar to cartesian
       px = rho * cos(phi);
       py = rho * sin(phi);
       v  = 0.0;
