@@ -190,7 +190,7 @@ void UKF::Prediction(double delta_t) {
   double px, py, v, yaw, yawd, nu_a, nu_yawdd;
   double px_next, py_next, v_next, yaw_next, yawd_next;
 
-  /* Create sigma points */
+  /* Generate sigma points */
 
   // Create the augmented state vector
   // x_aug = [px, py, v, yaw, yawd, nu_a, nu_yawdd] (size: 7)
@@ -207,13 +207,15 @@ void UKF::Prediction(double delta_t) {
   // Create the square root matrix
   MatrixXd L = P_aug_.llt().matrixL();
 
-  // Create augmented sigma points (matrix 7 x 15)
+  // Create augmented sigma points
   Xsig_aug_.col(0) = x_aug_;
   for (int i = 0; i < n_aug_; i++)
   {
     Xsig_aug_.col(i + 1) = x_aug_ + sqrt(lambda_ + n_aug_) * L.col(i);
     Xsig_aug_.col(i + 1 + n_aug_) = x_aug_ - sqrt(lambda_ + n_aug_) * L.col(i);
   }
+
+  /* Predict sigma points */
 
   for (int i = 0; i < 2 * n_aug_ + 1; i++)
   {
@@ -249,7 +251,7 @@ void UKF::Prediction(double delta_t) {
     yaw_next = yaw_next + 0.5 * nu_yawdd * delta_t * delta_t;
     yawd_next = yawd_next + nu_yawdd * delta_t;
 
-    //write predicted sigma point into right column
+    // Cache predicted sigma points
     Xsig_pred_(0, i) = px_next;
     Xsig_pred_(1, i) = py_next;
     Xsig_pred_(2, i) = v_next;
@@ -257,7 +259,7 @@ void UKF::Prediction(double delta_t) {
     Xsig_pred_(4, i) = yawd_next;
   }
 
-  /* Predict sigma points */
+  /* Predict state mean and state covariance matrix */
 
   // Set weight
   weights_(0) = lambda_ / (lambda_ + n_aug_);
@@ -280,10 +282,6 @@ void UKF::Prediction(double delta_t) {
 
     P_ = P_ + weights_(i) * x_diff * x_diff.transpose() ;
   }
-
-  std::cout << "UKF::Predict" << std::endl;
-  std::cout << x_ << std::endl;
-  std::cout << P_ << std::endl;
 }
 
 /**
