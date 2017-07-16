@@ -290,7 +290,9 @@ void UKF::Prediction(double delta_t) {
  */
 void UKF::UpdateLidar(MeasurementPackage meas_package) {
   /* Lidar update: the Lidar measurement model is linear. As a result a
-     Standard Kalman filter is enough to to the update */
+     Standard Kalman filter is enough to do the update */
+
+  // Retrieve lidar measurement
   VectorXd z = meas_package.raw_measurements_;
   VectorXd y = z - H_lidar_ * x_;
   MatrixXd Ht = H_lidar_.transpose();
@@ -303,8 +305,10 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   MatrixXd I = MatrixXd::Identity(x_.size(), x_.size());
   P_ = (I - K * H_lidar_) * P_;
 
+  // Compute lidar NIS value
   NIS_lidar_ = y.transpose() * Si * y;
 
+  // Write lidar NIS value to file
   NIS_lidar_os_ << NIS_lidar_ << std::endl;
 }
 
