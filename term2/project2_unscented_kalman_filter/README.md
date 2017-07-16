@@ -98,7 +98,7 @@ RMSE values measure the accuracy of the filter in estimating the position and ve
 
 ## Project results
 
-The performance of the Unscented Kalman Filter designed in this project are evaluated by comparing the estimations provided by the flter against ground truth data. The metric used to measure the accuracy of the filter estimation is the Root Mean Squared Error (RMSE).
+The performance of the Unscented Kalman Filter designed in this project are evaluated by comparing the estimations provided by the filter against ground truth data. The metric used to measure the accuracy of the filter estimation is the Root Mean Squared Error (RMSE).
 Moreover, two datasets including noisy Lidar and Radar data are used.
 
 The performances of the filter have been evaulated using both the Lidar and Radar data first.
@@ -124,7 +124,7 @@ Again, consistency on NIS value confirms realistic estimations.
 ![alt text][lidar_nis_only_lidar_dataset1]
 ![alt text][lidar_nis_only_lidar_dataset2]
 
-If we discard Lidar data and instead use Radar data only the results are the following:
+If we discard Lidar data and, instead use Radar data only, the results are the following:
 
 * Dataset 1: [0.1657, 0.2488, 0.5499, 0.3515]
 * Dataset 2: [0.2944, 0.6520, 0.1533, 0.1928]
