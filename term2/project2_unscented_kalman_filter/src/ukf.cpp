@@ -132,24 +132,16 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       rho_dot = meas_package.raw_measurements_[2];
       // Convert polar to cartesian
       px = rho * cos(phi);
-      if (fabs(px) < 0.001)
-        px = 0.001;
       py = rho * sin(phi);
-      if (fabs(py) < 0.001)
-        py = 0.001;
-      v = 0.0;
+      v  = 0.0;
       yaw = 0.0;
       yawd = 0.0;
 
     } else if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
       // Position (x)
       px = meas_package.raw_measurements_[0];
-      if (fabs(px) < 0.001)
-        px = 0.001;
       // Position (y)
       py = meas_package.raw_measurements_[1];
-      if (fabs(py) < 0.001)
-        py = 0.001;
       // Laser does not provide speed measurements
       v = 0.0;
       yaw = 0.0;
@@ -342,11 +334,6 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
     py = Xsig_pred_(1, i);
     v  = Xsig_pred_(2, i);
     yaw = Xsig_pred_(3, i);
-
-    if (fabs(px) < 0.001)
-      px = 0.001;
-    if (fabs(py) < 0.001)
-      py = 0.001;
 
     v1 = cos(yaw) * v;
     v2 = sin(yaw) * v;
