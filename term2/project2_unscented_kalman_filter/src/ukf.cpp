@@ -323,7 +323,7 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
 
   MatrixXd Zsig = MatrixXd(3, 2 * n_aug_ + 1);
 
-  //transform sigma points into measurement space
+  // Transform sigma points into measurement space
   for (int i = 0; i < 2 * n_aug_ + 1; i++)
   {
     // Extract values from predicted sigma points matrix for better readibility
@@ -340,7 +340,7 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
     v1 = cos(yaw) * v;
     v2 = sin(yaw) * v;
 
-    // Measurement model
+    // Radar measurement model
     Zsig(0, i) = sqrt(px * px + py * py);
     Zsig(1, i) = atan2(py, px);
     Zsig(2, i) = (px * v1 + py * v2) / sqrt(px * px + py * py);
@@ -367,7 +367,7 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
     S = S + weights_(i) * z_diff * z_diff.transpose();
   }
 
-  //add measurement noise covariance matrix
+  // Add measurement noise covariance matrix
   S = S + R_radar_;
 
   // Calculate cross correlation matrix
@@ -383,14 +383,14 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
 
     // State difference
     VectorXd x_diff = Xsig_pred_.col(i) - x_;
-    //angle normalization
+    // Angle normalization
     while (x_diff(3) > M_PI) x_diff(3) -= 2.0 * M_PI;
     while (x_diff(3) < -M_PI) x_diff(3) += 2.0 * M_PI;
 
     Tc = Tc + weights_(i) * x_diff * z_diff.transpose();
   }
 
-  //Kalman gain K;
+  // Kalman gain K;
   MatrixXd K = Tc * S.inverse();
 
   // Residual
@@ -405,7 +405,9 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   x_ = x_ + K * z_diff;
   P_ = P_ - K * S * K.transpose();
 
+  // Compute radar NIS value
   NIS_radar_ = z_diff.transpose() * S.inverse() * z_diff;
 
+  // Write radar NIS value to file
   NIS_radar_os_ << NIS_radar_ << std::endl;
 }
