@@ -52,7 +52,7 @@ At the end of each `Prediction`/`Update` cycle the Unscented Kalman Filter provi
 
 The Unscented Kalman Filter has a set of properties that make it suitble to be used as a sensor fusion tool for Self-Driving Cars. The three most important properties of the Unscented Kalman Filter are:
 
-1. An Unscented Kalamn Filter can use noisy measurement data as input to accurately estimate position and velocity of an object without introducing significant delays;
+1. An Unscented Kalman Filter can use noisy measurement data as input to accurately estimate position and velocity of an object without introducing significant delays;
 
 2. An Unscented Kalman Filter can estimate the orientation (yaw) and yaw rate of the object using sensors (such as a Radar and a Lidar) that can't even directly observe orientation and yaw rate;
 
