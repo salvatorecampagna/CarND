@@ -22,12 +22,7 @@ UKF::UKF() {
   x_ << 0, 0, 0, 0, 0;
 
   // initial covariance matrix
-  P_ = MatrixXd(5, 5);
-  P_ << 1, 0, 0, 0, 0,
-        0, 1, 0, 0, 0,
-        0, 0, 1000, 0, 0,
-        0, 0, 0, 1000, 0,
-        0, 0, 0, 0, 1;
+  P_ = MatrixXd::Identity(5, 5);
 
   // Process noise standard deviation longitudinal acceleration in m/s^2
   //std_a_ = 30; //TODO: tune this value
