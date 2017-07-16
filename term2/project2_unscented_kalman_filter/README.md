@@ -1,10 +1,10 @@
 # Unscented Kalman Filter Project
 Self-Driving Car Engineer Nanodegree Program
 
-[lidar_nis_dataset1]: ./mages/nis_lidar_dataset1.jpg "NIS Lidar Dataset 1"
-[radar_nis_dataset1]: ./images/nis_radar_dataset1.jpg "NIS Radar Dataset 1"
-[lidar_nis_dataset2]: ./images/nis_lidar_dataset2.jpg "NIS Lidar Dataset 2"
-[radar_nis_dataset2]: ./images/nis_radar_dataset2.jpg "NIS Radar Dataset 2"
+[lidar_nis_dataset1]: ./images/lidar_nis_dataset1.jpg "NIS Lidar Dataset 1"
+[radar_nis_dataset1]: ./images/radar_nis_dataset1.jpg "NIS Radar Dataset 1"
+[lidar_nis_dataset2]: ./images/lidar_nis_dataset2.jpg "NIS Lidar Dataset 2"
+[radar_nis_dataset2]: ./images/radar_nis_dataset2.jpg "NIS Radar Dataset 2"
 [radar_nis_only_radar_dataset1]: ./images/radar_nis_only_radar_dataset1.jpg "NIS Radar only Dataset 1"
 [radar_nis_only_radar_dataset2]: ./images/radar_nis_only_radar_dataset2.jpg "NIS Radar only Dataset 2"
 [lidar_nis_only_lidar_dataset1]: ./images/lidar_nis_only_lidar_dataset1.jpg "NIS Lidar only Dataset 1"
