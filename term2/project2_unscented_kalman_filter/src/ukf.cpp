@@ -317,7 +317,8 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
  * @param {MeasurementPackage} meas_package
  */
 void UKF::UpdateRadar(MeasurementPackage meas_package) {
-  /* Radar update */
+  /* Radar update: the Radar measurement model is non-linear.
+     As a result a Unscented Kalman filter is required to do the update */
   double px, py, v, yaw, v1, v2;
   int n_z = 3;
 
