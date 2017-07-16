@@ -11,17 +11,17 @@ using std::vector;
  * Initializes Unscented Kalman filter
  */
 UKF::UKF() {
-  // if this is false, laser measurements will be ignored (except during init)
+  // If this is false, laser measurements will be ignored (except during init)
   use_laser_ = true;
 
-  // if this is false, radar measurements will be ignored (except during init)
+  // If this is false, radar measurements will be ignored (except during init)
   use_radar_ = true;
 
-  // initial state vector
+  // Initial state vector
   x_ = VectorXd(5);
   x_ << 0, 0, 0, 0, 0;
 
-  // initial covariance matrix
+  // Initial covariance matrix
   P_ = MatrixXd::Identity(5, 5);
 
   // Process noise standard deviation longitudinal acceleration in m/s^2
@@ -117,13 +117,13 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   if (!is_initialized_)
   {
     if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
-      //range
+      // Range
       rho = meas_package.raw_measurements_[0];
-      //bearing
+      // Bearing
       phi = meas_package.raw_measurements_[1];
-      //radial velocity
+      // Radial velocity
       rho_dot = meas_package.raw_measurements_[2];
-      //convert polar to cartesian
+      // Convert polar to cartesian
       px = rho * cos(phi);
       if (fabs(px) < 0.001)
         px = 0.001;
@@ -135,28 +135,28 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       yawd = 0.0;
 
     } else if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
-      //position (x)
+      // Position (x)
       px = meas_package.raw_measurements_[0];
       if (fabs(px) < 0.001)
         px = 0.001;
-      //position (y)
+      // Position (y)
       py = meas_package.raw_measurements_[1];
       if (fabs(py) < 0.001)
         py = 0.001;
-      //laser does not provide speed measurements
+      // Laser does not provide speed measurements
       v = 0.0;
       yaw = 0.0;
       yawd = 0.0;
 
     }
 
-    //initialize state variable using the first measurement - radar
+    // Initialize state variable using the first measurement - radar
     x_ << px, py, v, yaw, yawd;
 
-    //update time
+    // Update time
     time_us_ = meas_package.timestamp_;
 
-    //done initializing, no need to predict or update
+    // Done initializing, no need to predict or update
     is_initialized_ = true;
     return;
   }
@@ -319,6 +319,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
 void UKF::UpdateRadar(MeasurementPackage meas_package) {
   /* Radar update: the Radar measurement model is non-linear.
      As a result a Unscented Kalman filter is required to do the update */
+
   double px, py, v, yaw, v1, v2;
   int n_z = 3;
 
