@@ -42,7 +42,7 @@ The prediction step goes through the following three steps:
 * Sigma points prediction
 * Process mean and covariance matrix prediction
 
-The update step goes through the following three steps:
+The update step goes through the following two steps:
 * Prediction measurement
 * State update
 
