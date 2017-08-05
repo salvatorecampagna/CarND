@@ -60,6 +60,7 @@ This repository includes two files that can be used to set up and intall uWebSoc
 Once the install for uWebSocketIO is complete, the main program can be built and ran by doing the following from the project top directory.
 
 `./build.sh` 
+
 `./run.sh` 
 
 At this point run the Term 2 Simulator, select "Project 3: Kidnapped Vehicle" and start the simulation hitting the 'Start' button. Once the simulation starts you should see a car moving around, together with a circle representing the estimated car position and an arrow representing the estimated car heading provided by the Particle Filter. Landmarks associated to measurements are also identified during the simulation.
