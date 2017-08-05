@@ -2,16 +2,17 @@
 Self-Driving Car Engineer Nanodegree Program
 
 In this project a *Particle Filter* is used for the purpose of localizing a car given a set of noisy LIDAR measurements and a 2D map.
-The Particle Filter is implmented as a class in `particle_filter.h` and `particle_filter.cpp`. 
+The **Particle Filter** is implmented as a class in `particle_filter.h` and `particle_filter.cpp`. 
+
 The car has been kidnapped and transported to a new location. As a result, no information about the location
 is avilable to the car excluding a noisy GPS estimation. The car also has a map of the location and can rely
-on lots of noisy LIDAR measurements and control data.
+on lots of noisy LIDAR measurements and control data. 
 
 The Particle Filter implemented in this project estimates the position of the car in a 2D environment.
 
 # Background
 
-A Particle Filter is a filter used to estimate the internal state of a dynamic system when partial observations are made and random perturbations are present in the sensors as well as in the synamic system. The Particle Filter computes the conditional probability (also posterior distribution) of the states of some Markov process, given some noisy and partial observations.
+A Particle Filter is a filter used to estimate the internal state of a dynamic system when partial observations are made and random perturbations are present in the sensors as well as in the dynamic system. The Particle Filter computes the conditional probability (also posterior distribution) of the states of some Markov process, given some noisy and partial observations.
 In this project we try to solve a localization problem and, as a result, the Particle Filter is used to estimate the position of the car in a 2D world (x,y) and its heading.
 
 Among the algorithms used to estimate the state of a system it is the easiest to program and also the most flexible. It works with a continuous state space estimating a multimodal posterior distribution. However, Particle Filters do not perform well when applied to very high-dimensional systems.
@@ -21,7 +22,7 @@ The idea behind a Particle Filter is to use a set of particles each being a disc
 
 The Particle Filter can rely also on a map, in this case a landmark-based map, and on measurements to compute the posterior distribution.
 
-## particle Filter algorithm steps
+## Particle Filter algorithm steps
 
 1. Initialization
 
@@ -30,25 +31,25 @@ Theoretcally, anyway, as the number of particles used approaches infinity the po
 
 2. Prediction step
 
-In this step the algorithm predicts the position and heading of the car at the next time step. For each particle the algorithm updates the particle's location and heading based on the velocity and yaw rate measurements coming from the sensors. To be more precise, the equations used for the prediction step are the equations describing a CTRV (Constnt Turn Rate and Velocity) motion model. To account for the uncertainty in the control input Gaussian noise is added to the velocity and yaw rate.
+In this step the algorithm predicts the position and heading of the car at the next time step. For each particle the algorithm updates the particle's location and heading based on the velocity and yaw rate measurements coming from the sensors. To be more precise, the equations used for the prediction step are the equations describing a **CTRV** (Constant Turn Rate and Velocity) motion model. To account for the uncertainty in the control input Gaussian noise is added to the velocity and yaw rate.
 
 3. Data transformation and association
 
-Before we can use landmark measurements of the objects around us to update the posterior probability (belief of the car position and heading) we need to solve the so called `data association problem`. This problem descibes the problem of matching objects in real world, whose position is available by means of a map, to landmark measurements.
-One way to address and solve the data association problem is to pick and match leandmarks with measurements using a nearest neighbor algorithm. The idea behind this approach, is to match the closest measurement as a correct match for landmarks in the map.
+Before we can use landmark measurements of the objects around us to update the posterior probability (belief of the car position and heading) we need to solve the so called **data association problem**. This problem descibes the problem of matching objects in real world, whose position is available by means of a map, to landmark measurements.
+One way to address and solve the data association problem is to pick and match leandmarks with measurements using a **nearest neighbor algorithm**. The idea behind this approach, is to match the closest measurement as a correct match for landmarks in the map.
 
 4. Update step
 
-At this stage the measurements come into play. Instead of affecting directly the prediction of the state of the car, measurements are used to determine the weight of each particle. Intuitively the weight of a particle is a measure of important of that particle or put it another way a measure of how much that particle represents the true estimated position of the car. In this project the weight of each particle is updated using a Multivariate Gaussian probability density function for each measurement. So, each particle is used to compute a partial weight against each measurement (using the Gaussian) and then all this partial weights are multiplied to give the weight for the particle. This procedre needs to be repeted for all particles.
+At this stage the measurements come into play. Instead of affecting directly the prediction of the state of the car, measurements are used to determine the **weight** of each particle. Intuitively, the weight of a particle is a measure of importance of that particle, or put it another way, a measure of how much that particle represents the estimated position of the car. In this project the weight of each particle is updated using a **Multivariate Gaussian probability density function** for each measurement. So, each particle is used to compute a partial weight against each measurement (using the Gaussian) and then all this partial weights are multiplied to give the weight for the particle. This procedure needs to be repeted for all particles.
 
 5. Resampling
 
 Once each particle's weight has been updated a resample procedure takes place to select the particles used in the next time step. The resampling procedure is driven by the idea of selecting particles to keep in the next iteration, with a probability proportional to each particle's weight.
-As a result of this resampling strategy, particles whose weight is higher have a higher likelihood of `surviving` the sampling procedure and ending up in the set of particles to use in the next step. Be carefult, the resampling procedure is a resampling with repetion which means each particle could be picked multiple times and end up in the set of particles to use in the next iteration more than once. This suggests also that particles whose weight is higher have a higher probability of being selected multiple times during resampling, while particles whose weight is low are very likely `to die` in this process and being discarded.
+As a result of this resampling strategy, particles whose weight is higher have a higher likelihood of `surviving` the sampling procedure and ending up in the set of particles to use in the next step. Be carefult, the resampling procedure is a resampling with repetion, which means each particle could be picked multiple times and end up in the set of particles to use in the next iteration more than once. This suggests also that particles whose weight is higher have a higher probability of being selected multiple times during resampling, while particles whose weight is low are very likely `to die` in this process and being discarded.
 
 6. Estimation error
 
-To evaulate the accuracy of the Particle Filter its positioning accuracy is measured given the ground truth position of the car. For the purpose of this project the accuracy is evaluated computing a weighted average error of all particles used by the filter.
+To evaulate the accuracy of the Particle Filter its **positioning accuracy** is measured given the ground truth position of the car. For the purpose of this project the accuracy is evaluated computing a weighted average error of all particles used by the filter.
 
 # Running the Code
 
@@ -58,18 +59,18 @@ This repository includes two files that can be used to set up and intall uWebSoc
 
 Once the install for uWebSocketIO is complete, the main program can be built and ran by doing the following from the project top directory.
 
-./build.sh
-./run.sh
+`./build.sh` 
+`./run.sh` 
 
-At this point run the Term 2 Simulator, select "Project 3: Kidnapped Vehicle" and start the simulation hitting the 'Start' button. Once the simulation starts you should see a car moving around together with a circle representing the estimated car position and an arrow representing the estimated car heading provided by the Particle Filter. Landmarks associated to measurements are also identified during the simulation.
+At this point run the Term 2 Simulator, select "Project 3: Kidnapped Vehicle" and start the simulation hitting the 'Start' button. Once the simulation starts you should see a car moving around, together with a circle representing the estimated car position and an arrow representing the estimated car heading provided by the Particle Filter. Landmarks associated to measurements are also identified during the simulation.
 
 # Project structure and code
 
-The source code provided in main.cpp implements communication with the simulator.
+The source code provided in `main.cpp` implements communication with the simulator.
 
-Here is the main protcol used by main.cpp to communicate with the simulator.
+Here is the main protcol used by `main.cpp` to communicate with the simulator.
 
-INPUT: values provided by the simulator to the CC++ program
+INPUT: values provided by the simulator to the C++ program
 
 // sense noisy position data from the simulator
 
