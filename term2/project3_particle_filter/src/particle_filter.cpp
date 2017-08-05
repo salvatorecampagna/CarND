@@ -292,26 +292,26 @@ string ParticleFilter::getAssociations(Particle best)
 {
 	vector<int> v = best.associations;
 	stringstream ss;
-    copy( v.begin(), v.end(), ostream_iterator<int>(ss, " "));
-    string s = ss.str();
-    s = s.substr(0, s.length()-1);  // get rid of the trailing space
-    return s;
+	copy( v.begin(), v.end(), ostream_iterator<int>(ss, " "));
+	string s = ss.str();
+	s = s.substr(0, s.length()-1);  // get rid of the trailing space
+	return s;
 }
 string ParticleFilter::getSenseX(Particle best)
 {
 	vector<double> v = best.sense_x;
 	stringstream ss;
-    copy( v.begin(), v.end(), ostream_iterator<float>(ss, " "));
-    string s = ss.str();
-    s = s.substr(0, s.length()-1);  // get rid of the trailing space
-    return s;
+	copy( v.begin(), v.end(), ostream_iterator<float>(ss, " "));
+	string s = ss.str();
+	s = s.substr(0, s.length()-1);  // get rid of the trailing space
+	return s;
 }
 string ParticleFilter::getSenseY(Particle best)
 {
 	vector<double> v = best.sense_y;
 	stringstream ss;
-    copy( v.begin(), v.end(), ostream_iterator<float>(ss, " "));
-    string s = ss.str();
-    s = s.substr(0, s.length()-1);  // get rid of the trailing space
-    return s;
+	copy( v.begin(), v.end(), ostream_iterator<float>(ss, " "));
+	string s = ss.str();
+	s = s.substr(0, s.length()-1);  // get rid of the trailing space
+	return s;
 }
