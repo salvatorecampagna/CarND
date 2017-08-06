@@ -27,7 +27,7 @@ The Particle Filter can rely also on a map, in this case a landmark-based map, a
 1. Initialization
 
 To accomplish the purpose of estimating the posterior distribution of the car position a Particle Filter uses a set of particles. Once the particles are created they must be initialized with an initial position and heading. For the purpose of this project GPS coordinates are fed to the Particle Filter initialization procedure. Samples are drawn from a Gaussian distribution centered around the position provided by the GPS to take into account for sensor noise around the initial GPS position. The result is a set o particles whose position and heading is centered around the GPS coordinates. Note that the number of particles to use is a tuning parameter and experiments are required to select the right number of particles. For applications requiring real-time performances having fewer particles plays an important role with regard to the time spent in processing each particle.
-Theoretcally, anyway, as the number of particles used approaches infinity the posterior distribution estimated by the Partcle Filter approaches a Bayes posterior ditribution.
+Theoretcally, anyway, as the number of particles used approaches infinity the posterior distribution estimated by the Particle Filter approaches a Bayes posterior ditribution.
 
 2. Prediction step
 
