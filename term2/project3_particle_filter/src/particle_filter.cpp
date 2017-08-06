@@ -262,7 +262,7 @@ void ParticleFilter::resample() {
 
     // Create a new particle out of the randomly selected particle
     Particle p = {
-      index, // id
+      i, // id
       particles[index].x, // x position
       particles[index].y, // y position
       particles[index].theta, // theta (heading)
