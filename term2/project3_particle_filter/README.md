@@ -4,8 +4,8 @@ Self-Driving Car Engineer Nanodegree Program
 In this project a **Particle Filter** is used for the purpose of localizing a car given a set of noisy LIDAR measurements and a 2D map.
 The Particle Filter is implmented as a class in `particle_filter.h` and `particle_filter.cpp`. 
 
-The car has been kidnapped and transported to a new location. As a result, no information about the location
-is avilable to the car excluding a noisy GPS estimation. The car also has a map of the location and can rely
+The car is placed in a new unknown location. As a result, no information about the location
+is avilable to the car excluding a noisy GPS estimation. The car also has a map and can rely
 on lots of noisy LIDAR measurements and control data. 
 
 The Particle Filter implemented in this project estimates the position of the car in a 2D environment.
