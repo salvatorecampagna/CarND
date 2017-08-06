@@ -13,6 +13,9 @@
 using namespace std;
 
 void ParticleFilter::init(double x, double y, double theta, double std[]) {
+	// Set the number of particles. Initialize all particles to first position (based on estimates of 
+	// x, y, theta and their uncertainties from GPS) and all weights to 1. 
+	// Add random Gaussian noise to each particle.
 
   // number of particles (must be tuned to balance estimation accuracy and filter speed)
   num_particles = 30;
@@ -53,20 +56,22 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 }
 
 void ParticleFilter::prediction(double delta_t, double std_pos[], double velocity, double yaw_rate) {
+	// Predict position of each particle using velocity, and yaw rate measurements
+	// and given the time elapsed from last step. Also add random Gaussian noise.
 	
 	// Random number generator
   std::default_random_engine gen;
 
-  // Normal distribution generator for x coordinate
+  // Normal distribution generator for noise on x coordinate
   std::normal_distribution<double> dist_x(0.0, std_pos[0]);
 
-  // Normal distribution generator for y coordinate
+  // Normal distribution generator for noise on y coordinate
   std::normal_distribution<double> dist_y(0.0, std_pos[1]);
 
-  // Normal distribution generator for theta (heading)
+  // Normal distribution generator for noise on theta (heading)
   std::normal_distribution<double> dist_theta(0.0, std_pos[2]);
 
-	// Predict the position of ech particle using the motion model
+	// Predict the position of ech particle using the CTRV motion model
 	for (int i = 0; i < num_particles; ++i)
 	{
 		// yaw_rate == 0 (going straight)
@@ -93,8 +98,8 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 }
 
 void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::vector<LandmarkObs>& observations) {
-	// Find the predicted measurement that is closest to each observed measurement and assign the
-	// observed measurement to this particular landmark.
+	// Find the predicted measurement that is closest to each observed
+	// measurement and assign the observed measurement to this particular landmark.
 
 	// Iterate over all observed measurements
 	for (int i = 0; i < observations.size(); ++i)
@@ -130,8 +135,9 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 	// As a result transformation between vehicle reference system and map reference
 	// system is required.
 	// This transformation requires both rotation AND translation (but no scaling).
+
 	// Values used to compute Multivariate-Gaussian
-	// (declared outsize of for loop since values
+	// (declared outside of for loop since values
 	// do not depend on i/j)
 	
 	// Landmark position standard deviations
@@ -200,9 +206,12 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 		// Weight computation
 		// Use Multivariate-Gaussian distribution to derive the
 		// weight of each particle.
-		// P(x,y): x and y are measurement observations in map coordinates
-		// mu_x, mu_y: landmark position
-		// stdx, stdy: standard deviation on landmark position 
+		// P(x,y): partial weight of particle i, x and y are measurement observations
+		// in map coordinates
+		// mu_x, mu_y: Gaussian distribution mean, landmark position
+		// stdx, stdy: Gaussian distribution standard deviation on landmark position 
+
+		// Accumulator for all partial products for the weight of each particle Pi
 		double w = 1.0;
 
 		for (int j = 0; j < map_observations.size(); ++j)
@@ -232,7 +241,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 }
 
 void ParticleFilter::resample() {
-	// Resample particles with replacement with probability proportional to each particle's weight.
+	// Resample particles with replacement with probability proportional
+	// to each particle's weight.
 	
 	// New set of particles created doing resampling
 	// This set of particles will replace the current
@@ -271,7 +281,8 @@ void ParticleFilter::resample() {
 
 Particle ParticleFilter::SetAssociations(Particle particle, std::vector<int> associations, std::vector<double> sense_x, std::vector<double> sense_y)
 {
-	// particle: the particle to assign each listed association, and association's (x,y) world coordinates mapping to
+	// particle: the particle to assign each listed association, and association's
+	// (x,y) world coordinates mapping to
 	// associations: The landmark id that goes along with each listed association
 	// sense_x: the associations x mapping already converted to world coordinates
 	// sense_y: the associations y mapping already converted to world coordinates
