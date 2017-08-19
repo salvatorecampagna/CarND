@@ -70,3 +70,5 @@ The `pid` executable accepts 3 parameters for `Kp`, `Ki` and `Kd`. To use the pa
 `./pid 0.13 0.0002 3.0`  
 
 The source code provided in `main.cpp` implements the communication protocol with the simulator and calls the PID controller methods to inizialize and compute the control command. After the PID contoller is running the simulator can be started and will listen for PID controller commands on a web socket. To simulate the car driving under control of the PID controller select "Project 4: PID Controller" in the simulator. As a result the car will start moving receiving control command from the PID controller.
+
+A video is available [here](https://github.com/salvatorecampagna/CarND/blob/master/term2/project4_pid_controller/video.mp4) showing the car driving in the simulator.
