@@ -6,13 +6,13 @@ Self-Driving Car Engineer Nanodegree Program
 In this project a **PID controller** is used for the purpose of controlling the steering of a self-driving car.
 The car is driven inside a simulator which provides the Cross-Track Error (CTE), the speed and the angle as input for the PID controller. The PID controller has to provide as output the steering command to drive the car on the track inside the simulator.  
 
-A PID Controller uses a Proportional (P), a Differential (D) and an Integral (I) component to compute the output command. Each component contirbutes to the output according to a gain parameter, one for each component, Kp,Ki and Kd. Each of these three components serves a specific purpose and has a different effect on the output of the PID controller.  
+A PID Controller uses a Proportional (P), a Differential (D) and an Integral (I) component to compute the output command. Each component contirbutes to the output according to a gain parameter, one for each component, Kp, Ki and Kd. Each of these three components serves a specific purpose and has a different effect on the output of the PID controller.  
 
 The effect of each component is as follows:
 
 * Proportional (P): it contributes to steering the car by a value that is proportional to the Cross-Track Error (CTE) that the PID reads as input.
 * Differential (D): contributes to smoothing the overshoot effect typical of a P controller.
-* Integram (I): contributes to correcting bias errors resulting in a PD controller not being able to reach a correct staedy state value.  
+* Integram (I): contributes to correcting bias errors resulting in a PD controller not being able to reach a correct steady state value.  
 
 
 Coding a PID controller in C++ is quite easy to do as you can see having a look at the source code in `PID.h` and `PID.cpp`. Much harder is to find the right set of parameters for the PID controller. A PID controller needs three parameters to be tuned to have good performances:  
@@ -69,4 +69,4 @@ The `pid` executable accepts 3 parameters for `Kp`, `Ki` and `Kd`. To use the pa
 
 `./pid 0.13 0.0002 3.0`  
 
-The source code provided in `main.cpp` implements the communication protocol with the simulator and calls the PID controller methods to inizialize tna dcompute the control command. After the PID contoller is running the simulator can be started and will listen for PID controller commands on a web socket. To simulate the car driving under control of the PID controller select "Project 4: PID Controller" in the simulator. As a result the car will start moving receiving control command from the PID controller.
+The source code provided in `main.cpp` implements the communication protocol with the simulator and calls the PID controller methods to inizialize and compute the control command. After the PID contoller is running the simulator can be started and will listen for PID controller commands on a web socket. To simulate the car driving under control of the PID controller select "Project 4: PID Controller" in the simulator. As a result the car will start moving receiving control command from the PID controller.
