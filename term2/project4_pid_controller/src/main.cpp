@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 
   PID pid_steer;
   
-  if (argc != 7)
+  if (argc != 4)
   {
     usage(argv[0]);
     return 0;
