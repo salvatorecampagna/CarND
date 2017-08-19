@@ -1,11 +1,7 @@
 # PID Controller Project
 Self-Driving Car Engineer Nanodegree Program
 
----
-
-## Background  
-
----  
+## Background   
 
 In this project a **PID controller** is used for the purpose of controlling the steering of a self-driving car.
 The car is driven inside a simulator which provides the Cross-Track Error (CTE), the speed and the angle as input for the PID controller. The PID controller has to provide as output the steering command to drive the car on the track inside the simulator.  
@@ -40,9 +36,6 @@ After some tuning, the set of parameters found good enough to drive the car in t
 * Kd: 3.0
 
 ## Dependencies  
-
----  
-
 
 * cmake >= 3.5
  * All OSes: [click here for installation instructions](https://cmake.org/install/)
