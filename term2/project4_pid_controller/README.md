@@ -1,9 +1,48 @@
-# CarND-Controls-PID
+# PID Controller Project
 Self-Driving Car Engineer Nanodegree Program
 
 ---
 
-## Dependencies
+## Background  
+
+---  
+
+In this project a **PID controller** is used for the purpose of controlling the steering of a self-driving car.
+The car is driven inside a simulator which provides the Cross-Track Error (CTE), the speed and the angle as input for the PID controller. The PID controller has to provide as output the steering command to drive the car on the track inside the simulator.  
+
+A PID Controller uses a Proportional (P), a Differential (D) and an Integral (I) component to compute the output command. Each component contirbutes to the output according to a gain parameter, one for each component, Kp,Ki and Kd. Each of these three components serves a specific purpose and has a different effect on the output of the PID controller.  
+
+The effect of each component is as follows:
+
+* Proportional (P): it contributes to steering the car by a value that is proportional to the Cross-Track Error (CTE) that the PID reads as input.
+* Differential (D): contributes to smoothing the overshoot effect typical of a P controller.
+* Integram (I): contributes to correcting bias errors resulting in a PD controller not being able to reach a correct staedy state value.  
+
+
+Coding a PID controller in C++ is quite easy to do as you can see having a look at the source code in `PID.h` and `PID.cpp`. Much harder is to find the right set of parameters for the PID controller. A PID controller needs three parameters to be tuned to have good performances:  
+
+* Kp: proportional gain (weight for the proportional component)
+* Ki: integral gain (weight for the integral component)
+* Kd: differential gain (weight for the differential component)
+
+Most of the time devoted to this project has been spent finding the right combination of values for these parameters. I used a trial and error approach to find good enough values and also some heuristics including:  
+
+* Keeping the proportional gain low to favor stability of the PID controller. Increasing the proportional gain usually makes the PID controller unstable.
+
+* Use the integral gain to adjust offset errors. This is easy to spot since it is visible by looking if the car stays close to the center line of the track (after a turn).
+
+* Use the differential gain to adjust for delay errors and control overshoots. The derivative gain value is important to control overshoots and is useful to stabilize the output.
+
+After some tuning, the set of parameters found good enough to drive the car in the simulator are the following:  
+
+* Kp: 0.13
+* Ki: 0.0002
+* Kd: 3.0
+
+## Dependencies  
+
+---  
+
 
 * cmake >= 3.5
  * All OSes: [click here for installation instructions](https://cmake.org/install/)
@@ -24,9 +63,7 @@ Self-Driving Car Engineer Nanodegree Program
     git checkout e94b6e1
     ```
     Some function signatures have changed in v0.14.x. See [this PR](https://github.com/udacity/CarND-MPC-Project/pull/3) for more details.
-* Simulator. You can download these from the [project intro page](https://github.com/udacity/self-driving-car-sim/releases) in the classroom.
-
-There's an experimental patch for windows in this [PR](https://github.com/udacity/CarND-PID-Control-Project/pull/3)
+* Simulator available [here](https://github.com/udacity/self-driving-car-sim/releases) in the classroom.
 
 ## Basic Build Instructions
 
@@ -35,58 +72,8 @@ There's an experimental patch for windows in this [PR](https://github.com/udacit
 3. Compile: `cmake .. && make`
 4. Run it: `./pid`. 
 
-## Editor Settings
+The `pid` executable accepts 3 parameters for `Kp`, `Ki` and `Kd`. To use the parameters I have found run the PID controller as follows:  
 
-We've purposefully kept editor configuration files out of this repo in order to
-keep it as simple and environment agnostic as possible. However, we recommend
-using the following settings:
+`./pid 0.13 0.0002 3.0`  
 
-* indent using spaces
-* set tab width to 2 spaces (keeps the matrices in source code aligned)
-
-## Code Style
-
-Please (do your best to) stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html).
-
-## Project Instructions and Rubric
-
-Note: regardless of the changes you make, your project must be buildable using
-cmake and make!
-
-More information is only accessible by people who are already enrolled in Term 2
-of CarND. If you are enrolled, see [the project page](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/f1820894-8322-4bb3-81aa-b26b3c6dcbaf/lessons/e8235395-22dd-4b87-88e0-d108c5e5bbf4/concepts/6a4d8d42-6a04-4aa6-b284-1697c0fd6562)
-for instructions and the project rubric.
-
-## Hints!
-
-* You don't have to follow this directory structure, but if you do, your work
-  will span all of the .cpp files here. Keep an eye out for TODOs.
-
-## Call for IDE Profiles Pull Requests
-
-Help your fellow students!
-
-We decided to create Makefiles with cmake to keep this project as platform
-agnostic as possible. Similarly, we omitted IDE profiles in order to we ensure
-that students don't feel pressured to use one IDE or another.
-
-However! I'd love to help people get up and running with their IDEs of choice.
-If you've created a profile for an IDE that you think other students would
-appreciate, we'd love to have you add the requisite profile files and
-instructions to ide_profiles/. For example if you wanted to add a VS Code
-profile, you'd add:
-
-* /ide_profiles/vscode/.vscode
-* /ide_profiles/vscode/README.md
-
-The README should explain what the profile does, how to take advantage of it,
-and how to install it.
-
-Frankly, I've never been involved in a project with multiple IDE profiles
-before. I believe the best way to handle this would be to keep them out of the
-repo root to avoid clutter. My expectation is that most profiles will include
-instructions to copy files to a new location to get picked up by the IDE, but
-that's just a guess.
-
-One last note here: regardless of the IDE used, every submitted project must
-still be compilable with cmake and make./
+The source code provided in `main.cpp` implements the communication protocol with the simulator and calls the PID controller methods to inizialize tna dcompute the control command. After the PID contoller is running the simulator can be started and will listen for PID controller commands on a web socket. To simulate the car driving under control of the PID controller select "Project 4: PID Controller" in the simulator. As a result the car will start moving receiving control command from the PID controller.
