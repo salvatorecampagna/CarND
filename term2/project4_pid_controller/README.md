@@ -12,7 +12,7 @@ The effect of each component is as follows:
 
 * Proportional (P): it contributes to steering the car by a value that is proportional to the Cross-Track Error (CTE) that the PID reads as input.
 * Differential (D): contributes to smoothing the overshoot effect typical of a P controller.
-* Integram (I): contributes to correcting bias errors resulting in a PD controller not being able to reach a correct steady state value.  
+* Integral (I): contributes to correcting bias errors resulting in a PD controller not being able to reach a correct steady state value.  
 
 
 Coding a PID controller in C++ is quite easy to do as you can see having a look at the source code in `PID.h` and `PID.cpp`. Much harder is to find the right set of parameters for the PID controller. A PID controller needs three parameters to be tuned to have good performances:  
