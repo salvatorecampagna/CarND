@@ -6,19 +6,6 @@
 
 class Vehicle {
 
-private:
-
-  int id;
-  double x;
-  double y;
-  double v;
-  double s;
-  double d;
-  double yaw;
-
-  std::vector<double> previous_s;
-  std::vector<double> previous_d;
-
 public:
 
   Vehicle();
@@ -33,12 +20,24 @@ public:
   double get_d();
   double get_yaw();
   LANE lane();
-
   void update_vehicle_status(double x, double y, double v, double s, double d, double yaw);
   void set_previous_s(std::vector<double> previous_s);
   void set_previous_d(std::vector<double> previous_d);
   std::vector<double> get_previous_s();
   std::vector<double> get_previous_d();
+
+private:
+
+  int id;
+  double x;
+  double y;
+  double v;
+  double s;
+  double d;
+  double yaw;
+
+  std::vector<double> previous_s;
+  std::vector<double> previous_d;
 
 };
 

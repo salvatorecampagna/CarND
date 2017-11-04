@@ -11,13 +11,6 @@
 
 class Map {
 
-private:
-
-  tk::spline spline_x;
-  tk::spline spline_y;
-  tk::spline spline_dx;
-  tk::spline spline_dy;
-
 public:
 
   Map(){};
@@ -26,6 +19,13 @@ public:
 
   // Convert Frenet to XY coordinates
   std::vector<double> getXY(double s, double d);
+
+private:
+
+  tk::spline spline_x;
+  tk::spline spline_y;
+  tk::spline spline_dx;
+  tk::spline spline_dy;
 
 };
 

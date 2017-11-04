@@ -50,7 +50,7 @@ bool Road::is_lane_safe(Vehicle& car, LANE lane)
   return safe;
 }
 
-bool Road::free_lane(Vehicle& car, LANE lane)
+bool Road::is_lane_free(Vehicle& car, LANE lane)
 {
   std::vector<Vehicle> target_lane = this->get_lane_status(lane);
   bool is_lane_free = true;
@@ -78,7 +78,7 @@ LANE Road::find_target_lane(Vehicle& car)
   // center lane
   if (car_lane == LANE::LEFT_LANE || car_lane == LANE::RIGHT_LANE)
   {
-    if (this->free_lane(car, LANE::CENTER_LANE))
+    if (this->is_lane_free(car, LANE::CENTER_LANE))
     {
       target_lane = LANE::CENTER_LANE;
     }
@@ -87,11 +87,11 @@ LANE Road::find_target_lane(Vehicle& car)
   // left or right lane
   else
   {
-    if (this->free_lane(car, LANE::LEFT_LANE))
+    if (this->is_lane_free(car, LANE::LEFT_LANE))
     {
       target_lane = LANE::LEFT_LANE;
     }
-    else if (this->free_lane(car, LANE::RIGHT_LANE))
+    else if (this->is_lane_free(car, LANE::RIGHT_LANE))
     {
       target_lane = LANE::RIGHT_LANE;
     }

@@ -138,7 +138,7 @@ Planner::Planner()
 }
 
 // Jerk Minimizing Trajectory
-std::vector<double> Planner::JMT(std::vector<double> start, std::vector<double> end, double t) {
+std::vector<double> Planner::jerk_min_trajectory(std::vector<double> start, std::vector<double> end, double t) {
   std::vector<double> coeffs;
   double t2 = t * t;
   double t3 = t2 * t;
@@ -198,8 +198,8 @@ void Planner::compute_trajectory(Map& map, std::vector<std::vector<double>>& tra
   double T = this->n * DELTA_T;
 
   // Compute Jerk Minimizing Trajectory s(t) and d(t)
-  std::vector<double> s_poly = this->JMT(this->start_s, this->end_s, T);
-  std::vector<double> d_poly = this->JMT(this->start_d, this->end_d, T);
+  std::vector<double> s_poly = this->jerk_min_trajectory(this->start_s, this->end_s, T);
+  std::vector<double> d_poly = this->jerk_min_trajectory(this->start_d, this->end_d, T);
 
   for(int i = 0; i < n; i++)
   {
@@ -298,8 +298,104 @@ void Planner::new_trajectory(Map& map, Road& road, Vehicle& car, std::vector<std
   }
 }
 
+// Start state action
+void Planner::start(Vehicle& car)
+{
+  std::cout << "[action] start" << std::endl;
+  std::cout << "(s: " << car.get_s() << " d: " << car.get_d() << " v: " << car.get_v() << ")" << std::endl;
+
+  this->n = START_MULTIPLIER * TRAJECTORY_POINTS;
+  double target_v = SPEED_LIMIT / 2.2;
+  double target_s = car.get_s() + n * DELTA_T * target_v;
+
+  this->start_s = {car.get_s(), car.get_v(), 0.0};
+  this->end_s= {target_s, target_v, 0.0};
+  this->start_d = {get_lane_center_d(car.lane()), 0.0, 0.0};
+  this->end_d = {get_lane_center_d(car.lane()), 0.0, 0.0};
+
+  car.set_previous_s(this->end_s);
+  car.set_previous_d(this->end_d);
+
+  LANE curr_lane = car.lane();
+  LANE target_lane = car.lane();
+  this->update_state(curr_lane, target_lane);
+}
+
+// Keep lane action
+void Planner::keep_lane(Vehicle& car)
+{
+  std::cout << "[action] keep lane: " << lane_to_string(car.lane()) << std::endl;
+  std::cout << "(s: " << car.get_s() << " d: " << car.get_d() << " v: " << car.get_v() << ")" << std::endl;
+
+  this->n = KEEP_LANE_MULTIPLIER * TRAJECTORY_POINTS;
+  double target_v = std::min(car.get_previous_s()[1] * 1.20, SPEED_LIMIT);
+  double target_s = car.get_previous_s()[0] + n * DELTA_T * target_v;
+  double target_d = get_lane_center_d(car.get_previous_d()[0]);
+
+  this->start_s = {car.get_previous_s()[0], car.get_previous_s()[1], car.get_previous_s()[2]};
+  this->end_s = {target_s, target_v, 0.0};
+  this->start_d = {get_lane_center_d(car.get_previous_d()[0]), 0.0, 0.0};
+  this->end_d = {target_d, 0.0, 0.0};
+
+  car.set_previous_s(this->end_s);
+  car.set_previous_d(this->end_d);
+
+  LANE curr_lane = get_lane(car.get_previous_d()[0]);
+  LANE target_lane = get_lane(car.get_previous_d()[0]);
+  this->update_state(curr_lane, target_lane);
+}
+
+// Slow down action
+void Planner::slow_down(Vehicle& car){
+  std::cout << "[action] slow down: " << car.get_v() << std::endl;
+  std::cout << "(s: " << car.get_s() << " d: " << car.get_d() << " v: " << car.get_v() << ")" << std::endl;
+
+  this->n = SLOW_DOWN_MULTIPLIER * TRAJECTORY_POINTS;
+  this->recompute_trajectory = true;
+  double target_v = std::max(car.get_previous_s()[1] * 0.90, SPEED_LIMIT / 2.0);
+  double target_s = car.get_previous_s()[0] + n * DELTA_T * target_v;
+  double target_d = get_lane_center_d(car.get_previous_d()[0]);
+
+  this->start_s = {car.get_previous_s()[0], car.get_previous_s()[1], car.get_previous_s()[2]};
+  this->end_s = {target_s, target_v, 0.0};
+  this->start_d = {get_lane_center_d(car.get_previous_d()[0]), 0.0, 0.0};
+  this->end_d = {target_d, 0.0, 0.0};
+
+  car.set_previous_s(this->end_s);
+  car.set_previous_d(this->end_d);
+
+  LANE curr_lane = get_lane(car.get_previous_d()[0]);
+  LANE target_lane = get_lane(car.get_previous_d()[0]);
+  this->update_state(curr_lane, target_lane);
+}
+
+// Change lane action
+void Planner::change_lane(Vehicle& car, LANE new_lane){
+  std::cout << "[action] change lane: " << lane_to_string(car.lane());
+  std::cout << " => " << lane_to_string(new_lane) << std::endl;
+  std::cout << "(s: " << car.get_s() << " d: " << car.get_d() << " v: " << car.get_v() << ")" << std::endl;
+
+  this->n = CHANGE_LANE_MULTIPLIER * TRAJECTORY_POINTS;
+  this->recompute_trajectory = true;
+  double target_v = car.get_previous_s()[1];
+  double target_s = car.get_previous_s()[0] + n * DELTA_T * target_v;
+  double target_d = get_lane_center_d(new_lane);
+
+  this->start_s = {car.get_previous_s()[0], car.get_previous_s()[1], car.get_previous_s()[2]};
+  this->end_s = {target_s, target_v, 0.0};
+  this->start_d = {get_lane_center_d(car.get_previous_d()[0]), 0.0, 0.0};
+  this->end_d = {target_d, 0.0, 0.0};
+
+  car.set_previous_s(this->end_s);
+  car.set_previous_d(this->end_d);
+
+  LANE curr_lane = get_lane(car.get_previous_d()[0]);
+  LANE target_lane = get_lane(target_d);
+  this->update_state(curr_lane, target_lane);
+}
+
 // Update status given the current state and the target lane
-void Planner::set_state(LANE curr_lane, LANE target_lane)
+void Planner::update_state(LANE curr_lane, LANE target_lane)
 {
   if (curr_lane == target_lane)
   {
@@ -327,100 +423,4 @@ void Planner::set_state(LANE curr_lane, LANE target_lane)
       }
     }
   }
-}
-
-// Start state action
-void Planner::start(Vehicle& car)
-{
-  std::cout << "[action] start" << std::endl;
-  std::cout << "(s: " << car.get_s() << " d: " << car.get_d() << " v: " << car.get_v() << ")" << std::endl;
-
-  this->n = START_MULTIPLIER * TRAJECTORY_POINTS;
-  double target_v = SPEED_LIMIT / 2.2;
-  double target_s = car.get_s() + n * DELTA_T * target_v;
-
-  this->start_s = {car.get_s(), car.get_v(), 0.0};
-  this->end_s= {target_s, target_v, 0.0};
-  this->start_d = {get_lane_center_d(car.lane()), 0.0, 0.0};
-  this->end_d = {get_lane_center_d(car.lane()), 0.0, 0.0};
-
-  car.set_previous_s(this->end_s);
-  car.set_previous_d(this->end_d);
-
-  LANE curr_lane = car.lane();
-  LANE target_lane = car.lane();
-  this->set_state(curr_lane, target_lane);
-}
-
-// Keep lane action
-void Planner::keep_lane(Vehicle& car)
-{
-  std::cout << "[action] keep lane: " << lane_to_string(car.lane()) << std::endl;
-  std::cout << "(s: " << car.get_s() << " d: " << car.get_d() << " v: " << car.get_v() << ")" << std::endl;
-
-  this->n = KEEP_LANE_MULTIPLIER * TRAJECTORY_POINTS;
-  double target_v = std::min(car.get_previous_s()[1] * 1.20, SPEED_LIMIT);
-  double target_s = car.get_previous_s()[0] + n * DELTA_T * target_v;
-  double target_d = get_lane_center_d(car.get_previous_d()[0]);
-
-  this->start_s = {car.get_previous_s()[0], car.get_previous_s()[1], car.get_previous_s()[2]};
-  this->end_s = {target_s, target_v, 0.0};
-  this->start_d = {get_lane_center_d(car.get_previous_d()[0]), 0.0, 0.0};
-  this->end_d = {target_d, 0.0, 0.0};
-
-  car.set_previous_s(this->end_s);
-  car.set_previous_d(this->end_d);
-
-  LANE curr_lane = get_lane(car.get_previous_d()[0]);
-  LANE target_lane = get_lane(car.get_previous_d()[0]);
-  this->set_state(curr_lane, target_lane);
-}
-
-// Slow down action
-void Planner::slow_down(Vehicle& car){
-  std::cout << "[action] slow down: " << car.get_v() << std::endl;
-  std::cout << "(s: " << car.get_s() << " d: " << car.get_d() << " v: " << car.get_v() << ")" << std::endl;
-
-  this->n = SLOW_DOWN_MULTIPLIER * TRAJECTORY_POINTS;
-  this->recompute_trajectory = true;
-  double target_v = std::max(car.get_previous_s()[1] * 0.90, SPEED_LIMIT / 2.0);
-  double target_s = car.get_previous_s()[0] + n * DELTA_T * target_v;
-  double target_d = get_lane_center_d(car.get_previous_d()[0]);
-
-  this->start_s = {car.get_previous_s()[0], car.get_previous_s()[1], car.get_previous_s()[2]};
-  this->end_s = {target_s, target_v, 0.0};
-  this->start_d = {get_lane_center_d(car.get_previous_d()[0]), 0.0, 0.0};
-  this->end_d = {target_d, 0.0, 0.0};
-
-  car.set_previous_s(this->end_s);
-  car.set_previous_d(this->end_d);
-
-  LANE curr_lane = get_lane(car.get_previous_d()[0]);
-  LANE target_lane = get_lane(car.get_previous_d()[0]);
-  this->set_state(curr_lane, target_lane);
-}
-
-// Change lane action
-void Planner::change_lane(Vehicle& car, LANE new_lane){
-  std::cout << "[action] change lane: " << lane_to_string(car.lane());
-  std::cout << " => " << lane_to_string(new_lane) << std::endl;
-  std::cout << "(s: " << car.get_s() << " d: " << car.get_d() << " v: " << car.get_v() << ")" << std::endl;
-
-  this->n = CHANGE_LANE_MULTIPLIER * TRAJECTORY_POINTS;
-  this->recompute_trajectory = true;
-  double target_v = car.get_previous_s()[1];
-  double target_s = car.get_previous_s()[0] + n * DELTA_T * target_v;
-  double target_d = get_lane_center_d(new_lane);
-
-  this->start_s = {car.get_previous_s()[0], car.get_previous_s()[1], car.get_previous_s()[2]};
-  this->end_s = {target_s, target_v, 0.0};
-  this->start_d = {get_lane_center_d(car.get_previous_d()[0]), 0.0, 0.0};
-  this->end_d = {target_d, 0.0, 0.0};
-
-  car.set_previous_s(this->end_s);
-  car.set_previous_d(this->end_d);
-
-  LANE curr_lane = get_lane(car.get_previous_d()[0]);
-  LANE target_lane = get_lane(target_d);
-  this->set_state(curr_lane, target_lane);
 }

@@ -9,21 +9,22 @@
 
 class Road {
 
-protected:
-  std::vector<Vehicle> left_lane;
-  std::vector<Vehicle> center_lane;
-  std::vector<Vehicle> right_lane;
-
 public:
+
   Road() {};
   ~Road() {};
 
   void update_lanes(std::vector<Vehicle> left_lane, std::vector<Vehicle> center_lane, std::vector<Vehicle> right_lane);
   std::vector<Vehicle> get_lane_status(LANE lane);
-
   LANE find_target_lane(Vehicle& car);
   bool is_lane_safe(Vehicle& car, LANE lane);
-  bool free_lane(Vehicle& car, LANE lane);
+  bool is_lane_free(Vehicle& car, LANE lane);
+
+private:
+
+  std::vector<Vehicle> left_lane;
+  std::vector<Vehicle> center_lane;
+  std::vector<Vehicle> right_lane;
 };
 
 #endif // ROAD_H
