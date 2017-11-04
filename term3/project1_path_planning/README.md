@@ -3,12 +3,12 @@ Self-Driving Car Engineer Nanodegree Program
 
 ## Background   
 
-In this project a **Path Planning Module** is used for the purpose of navigating around a virtual highway with other traffic that is driving +-10 MPH of the 50 MPH speed limit. The car receives localization and sensor fusion data together with a sparse map list of waypoints around the highway. The car tries to go as close as possible to the 50 MPH speed limit, passing slower traffic when possible. The car avoids hitting other cars and stays inside of the marked road lanes at all times, unless going from one lane to another. The car is able to make one complete loop around the highway. The car does not experience total acceleration over 10 m/s^2 and jerk that is greater than 50 m/s^3.
+In this project a **Path Planning Module** is used for the purpose of navigating around a virtual highway with other traffic that is driving +-10 MPH of the 50 MPH speed limit. The car receives localization and sensor fusion data together with a sparse map list of waypoints around the highway. The car tries to go as close as possible to the 50 MPH speed limit, passing slower traffic when possible. The car avoids hitting other cars and stays inside of the marked road lanes at all times, unless going from one lane to another. The car is able to make one complete loop around the highway. The car does not experience total acceleration over 10 m/s^2 and jerk is never greater than 50 m/s^3.
 
 ## Model
 
 The Path Planning Module uses the following classes to accomplish the task of safely driving on the highway:
-* Lane (lane.h): this simple class provides a way to distinguish the three different lanes on the highway. There are three lanes, left, center and right starting from the middle of the road.
+* Lane (lane.h): this simple class provides a way to distinguish the three different lanes on the highway. There are three lanes, `left`, `center` and `right` starting from the middle of the road.
 * State (state.h): this simple class represents the states of the Finite State Machine of the path planning module. The path planner uses a Finite State Machine with four states: `start`, `keep lane`, `change lane left` and `change lane right`.
 * Map (map.h and map.cpp): the map is used to load the waypoints on the highway and get the XY coordinates for the estimated
 trajectories expressed as Frenet coordinates. The resulting XY coordinates are then sent to the motion control module in charge of executing the meneuver. Splines are used to interpolate the trajectory points and make trajectories smoother.
@@ -22,9 +22,9 @@ The path planning algorithm implemented in class Planner (planner.h and planner.
 
 In principle, the car will always try to stay in the same lane (`keep lane state`) and change state only in specific situations. To understand more about how the algorithm is working have a look at `Planner::new_trajectory` method in planner.cpp.
 * If the car is in the `start state` it will execute the start action. This state requires specific handling since the car needs to accelerate to reach traffic speed and start moving together with other cars on the highway.
-* If the car is in the `keep lane state` it will stay in the same state as long as it is safe to do so (planner.cpp lines 255 - 259). The `Road::is_lane_safe mehod` returns true or false depending on the distance of vehicles around the self-driving car.
+* If the car is in the `keep lane state` it will stay in the same state as long as it is safe to do so (planner.cpp lines 255 - 259). The `Road::is_lane_safe` method returns true or false depending on the distance of vehicles around the self-driving car.
 * If it is not safe to stay in `keep lane state` (planner.cpp lines 260 - 275) because, for instance we are approaching another slower vehicle, the car will first try to find a new lane which is safe to move to. If there is such lane which the car can move to safely it will execute the action `change lane` (planner.cpp line 273) otherwise will stay in its lane and slow down to avoid collisions (planner.cpp line 268).
-* When the car is in `change lane left state` or `change lane right state` (planner.cpp lines 278 - 291) it will either go to the `keep lane state` or `slow down state` depending on whether the lane is safe or not.
+* When the car is in `change lane left state` or `change lane right state` (planner.cpp lines 278 - 291) it will either go to the `keep lane state` or slow down depending on whether the lane is safe or not.
 
 Needless to say that the Finite State Machine is implemented in such a way that if the car is on the right lane moving still to the right is not possible, and the same is true about moving to the left, if the car is in the left lane of the highway.
 
