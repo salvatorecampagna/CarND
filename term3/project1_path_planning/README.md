@@ -30,6 +30,10 @@ Needless to say that the Finite State Machine is implemented in such a way that 
 
 Moving between states as described above is possible by means of four different actions which are actually implementations of the transition functions of the Finite State Machine: `start`, `keep lane`, `slow down` and `change lane` (planner.cpp lines 332 - 426).
 
+Here is a video showing the self-driving car driving on the highway using the simulator.
+
+[Video](path_planning.mp4)
+
 ## Dependencies
 
 * cmake >= 3.5
