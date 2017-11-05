@@ -21,13 +21,16 @@ public:
   std::vector<double> jerk_min_trajectory(std::vector<double> start, std::vector<double> end, double T);
   void compute_trajectory(Map& map, std::vector<std::vector<double>>& trajectory);
   void new_trajectory(Map& map, Road& road, Vehicle& car, std::vector<std::vector<double>>& trajectory);
-  void start(Vehicle& car);
-  void keep_lane(Vehicle& car);
-  void slow_down(Vehicle& car);
-  void change_lane(Vehicle& car, LANE target_lane);
-  void update_state(LANE current_lane, LANE target_lane);
+  void start(Road& road, Vehicle& car);
+  void keep_lane(Road& road, Vehicle& car);
+  void slow_down(Road& road, Vehicle& car);
+  void change_lane(Road& road, Vehicle& car, unsigned int target_lane);
+  void update_state(unsigned int current_lane, unsigned int target_lane);
 
 private:
+  double acceleration(Vehicle& car, double distance, double speed);
+  double brake(Vehicle& car, double distance, double speed);
+  double overtake(Vehicle& car, double distance, double curr_lane_speed, double target_lane_speed);
 
   int n;
   STATE state;

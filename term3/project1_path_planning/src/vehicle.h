@@ -19,7 +19,7 @@ public:
   double get_s();
   double get_d();
   double get_yaw();
-  LANE lane();
+  unsigned int lane();
   void update_vehicle_status(double x, double y, double v, double s, double d, double yaw);
   void set_previous_s(std::vector<double> previous_s);
   void set_previous_d(std::vector<double> previous_d);

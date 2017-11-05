@@ -13,6 +13,7 @@
 #include "vehicle.h"
 #include "road.h"
 #include "planner.h"
+#include "params.h"
 
 // for convenience
 using json = nlohmann::json;
@@ -40,16 +41,16 @@ std::string hasData(std::string s)
 int main(int argc, char *argv[])
 {
   uWS::Hub h;
-  std::fstream log_stream;
-  bool log_to_file = false;
+  std::fstream telemetry_log;
+  bool enable_log_telemetry = false;
 
   if(argc > 1)
   {
-    log_to_file = true;
-    log_stream.open(argv[1], std::fstream::out);
-    if (!log_stream.is_open())
+    enable_log_telemetry = true;
+    telemetry_log.open(argv[1], std::fstream::out);
+    if (!telemetry_log.is_open())
     {
-      std::cerr << "Unable to open log stream: " << argv[1] << std::endl;
+      std::cerr << "Unable to open telemetry log file: " << argv[1] << std::endl;
       return 0;
     }
   }
@@ -69,8 +70,8 @@ int main(int argc, char *argv[])
     &car,
     &planner,
     &counter,
-    &log_to_file,
-    &log_stream](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+    &telemetry_log,
+    &enable_log_telemetry](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -84,7 +85,8 @@ int main(int argc, char *argv[])
         auto j = json::parse(s);
 
         std::string event = j[0].get<std::string>();
-        if (event == "telemetry") {
+        if (event == "telemetry")
+        {
           // j[1] is the data JSON object
           counter++;
 
@@ -95,6 +97,16 @@ int main(int argc, char *argv[])
           double car_d = j[1]["d"];
           double car_yaw = j[1]["yaw"];
           double car_speed = j[1]["speed"];
+
+          if (car_d < 0.5 || car_d > 11.5)
+          {
+            std::cerr << "#Lane violation. d: " << car_d << std::endl;
+          }
+
+          if (car_speed > 50)
+          {
+            std::cerr << "#Speed violation: v: " << car_speed << std::endl;
+          }
 
           // Previous path data given to the Planner
           auto previous_path_x = j[1]["previous_path_x"];
@@ -111,13 +123,22 @@ int main(int argc, char *argv[])
           std::vector<double> next_x_vals;
           std::vector<double> next_y_vals;
 
-          if (log_to_file)
+          if (enable_log_telemetry)
           {
-            log_stream << counter << ", ";
-            log_stream << car_s << ", ";
-            log_stream << car_d << ", ";
-            log_stream << car_speed << std::endl;
-            log_stream.flush();
+            telemetry_log << counter << ", ";
+            telemetry_log << car_s << ", ";
+            telemetry_log << car_d << ", ";
+            telemetry_log << car_speed << std::endl;
+            if (car_d < 0.5 || car_d > 11.5)
+            {
+              telemetry_log << "#Lane violation. d: " << car_d << std::endl;
+            }
+
+            if (car_speed > 50)
+            {
+              telemetry_log << "#Speed violation: v: " << car_speed << std::endl;
+            }
+            telemetry_log.flush();
           }
 
           car.update_vehicle_status(car_x, car_y, car_speed, car_s, car_d, car_yaw);
@@ -140,18 +161,18 @@ int main(int argc, char *argv[])
 
             // Get i-th vehicle data
             Vehicle vehicle(id, x, y, v, s, d);
-            LANE vehicle_lane = vehicle.lane();
+            unsigned int vehicle_lane = vehicle.lane();
 
             // Put the i-th vehicle in the corresponding lane
-            if (vehicle_lane == LANE::LEFT_LANE)
+            if (vehicle_lane == Lane::LEFT_LANE)
             {
               left_lane.push_back(vehicle);
             }
-            else if (vehicle_lane == LANE::CENTER_LANE)
+            else if (vehicle_lane == Lane::CENTER_LANE)
             {
               center_lane.push_back(vehicle);
             }
-            else if (vehicle_lane == LANE::RIGHT_LANE)
+            else if (vehicle_lane == Lane::RIGHT_LANE)
             {
               right_lane.push_back(vehicle);
             }

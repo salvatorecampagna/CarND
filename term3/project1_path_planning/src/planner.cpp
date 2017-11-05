@@ -1,14 +1,6 @@
 #include "planner.h"
-
-const double MAX_D = 12.0; // meters
-const double MAX_S = 6914.14925765991; // meters
-const double SPEED_LIMIT = 19; // meters / second
-const double DELTA_T = 0.02; // seconds
-const double KEEP_LANE_MULTIPLIER = 2;
-const double SLOW_DOWN_MULTIPLIER = 3;
-const double CHANGE_LANE_MULTIPLIER = 4;
-const double START_MULTIPLIER = 4;
-const double TRAJECTORY_POINTS = 50;
+#include "params.h"
+#include "lane.h"
 
 // Convert a state to string
 std::string state_to_string(STATE state)
@@ -34,102 +26,6 @@ std::string state_to_string(STATE state)
   }
 
   return state_string;
-}
-
-// Convert a lane to string
-std::string lane_to_string(LANE lane)
-{
-  std::string lane_string;
-
-  switch(lane)
-  {
-    case LANE::LEFT_LANE:
-      lane_string = "left lane";
-      break;
-
-    case LANE::RIGHT_LANE:
-      lane_string = "right lane";
-      break;
-
-    case LANE::CENTER_LANE:
-      lane_string = "center lane";
-      break;
-
-    default:
-      lane_string = "unknown";
-  }
-
-  return lane_string;
-}
-
-// Get the lane given the distance from center of the road
-LANE get_lane(double d)
-{
-  LANE lane;
-
-  // Left lane 0 - 4 meters
-  if (d < 4.0)
-  {
-    lane = LANE::LEFT_LANE;
-  }
-  // Center lane 4 - 8 meters
-  else if ((d >= 4.0) && (d < 8.0))
-  {
-    lane = LANE::CENTER_LANE;
-  }
-  // Right lane 8 - 12 meters
-  else
-  {
-    lane = LANE::RIGHT_LANE;
-  }
-
-  return lane;
-}
-
-// Get the lane center given the lane
-double get_lane_center_d(LANE lane)
-{
-  double d;
-
-  switch (lane)
-  {
-    case LANE::LEFT_LANE:
-      d = 2.0; // Left lane center
-      break;
-
-    case LANE::CENTER_LANE:
-      d = 6.0; // Center lane center
-      break;
-
-    case LANE::RIGHT_LANE:
-      d = 10.0; // Right lane ceter
-      break;
-
-    default:
-      d = 6.0; // Center lane center
-  }
-
-  return d;
-}
-
-// Get the lane ceter given the distance
-double get_lane_center_d(double distance){
-  double d;
-
-  if (distance < 4.0)
-  {
-    d = 2.0; // left lane center
-  }
-  else if ((distance >= 4.0) && (distance < 8.0))
-  {
-    d = 6.0; // center lane center
-  }
-  else
-  {
-    d = 10.0; // right lane center
-  }
-
-  return d;
 }
 
 Planner::Planner()
@@ -201,6 +97,7 @@ void Planner::compute_trajectory(Map& map, std::vector<std::vector<double>>& tra
   std::vector<double> s_poly = this->jerk_min_trajectory(this->start_s, this->end_s, T);
   std::vector<double> d_poly = this->jerk_min_trajectory(this->start_d, this->end_d, T);
 
+
   for(int i = 0; i < n; i++)
   {
     t = DELTA_T * i;
@@ -247,7 +144,7 @@ void Planner::new_trajectory(Map& map, Road& road, Vehicle& car, std::vector<std
     // Start state trajectory
     if (this->state == STATE::START_STATE)
     {
-      this->start(car);
+      this->start(road, car);
     }
     // KEEP_LANE_STATE
     else if (this->state == STATE::KEEP_LANE_STATE)
@@ -255,38 +152,38 @@ void Planner::new_trajectory(Map& map, Road& road, Vehicle& car, std::vector<std
       if (road.is_lane_safe(car, car.lane()))
       {
         // No car within BUFFER_DISTANCE, keep lane
-        this->keep_lane(car);
+        this->keep_lane(road, car);
       }
       else
       {
         // There is a car within BUFFER_DISTANCE.
         // Either slow down or change lane
-        LANE target_lane = road.find_target_lane(car);
+        unsigned int target_lane = road.find_target_lane(car);
         if (target_lane == car.lane())
         {
           // Target lane is the current lane, slow down
-          this->slow_down(car);
+          this->slow_down(road, car);
         }
         else
         {
           // Target lane is a different lane, change lane
-          this->change_lane(car, target_lane);
+          this->change_lane(road, car, target_lane);
         }
       }
     }
     // CHANGE_LANE_LEFT or CHANGE_LANE_RIGHT
     else
     {
-      LANE target_lane = get_lane(car.get_previous_d()[0]);
+      unsigned int target_lane = Lane::get_lane(car.get_previous_d()[0]);
       if(road.is_lane_safe(car, target_lane))
       {
         // No car within BUFFER_DISTANCE, keep lane
-        this->keep_lane(car);
+        this->keep_lane(road, car);
       }
       else
       {
         // Car within BUFFER_DISTANCE, slow down
-        this->slow_down(car);
+        this->slow_down(road, car);
       }
     }
   }
@@ -298,104 +195,208 @@ void Planner::new_trajectory(Map& map, Road& road, Vehicle& car, std::vector<std
   }
 }
 
-// Start state action
-void Planner::start(Vehicle& car)
+// Adjust the speed in keep lane state
+double Planner::acceleration(Vehicle& car, double distance, double speed)
 {
+  double car_v = car.get_v();
+  double a = 1.04;
+
+  if (car_v > 45)
+  {
+    a = 1.02;
+  }
+  if (car_v > 47)
+  {
+    a = 1.01;
+  }
+  if (car_v > 48)
+  {
+    a = 0.98;
+  }
+  if (car_v > 49)
+  {
+    a = 0.95;
+  }
+
+  if (distance < COLLISION_DISTANCE)
+  {
+    a = 0.95;
+  }
+
+  if (distance < BUFFER_DISTANCE)
+  {
+    a = 1.0;
+  }
+
+  if (distance < 1.10 * BUFFER_DISTANCE)
+  {
+    a = 1.01;
+  }
+
+  return std::min(car.get_previous_s()[1] * a, std::max(speed, SPEED_LIMIT));
+}
+
+// Adjust the speed in while slowing down
+double Planner::brake(Vehicle& car, double distance, double speed)
+{
+  double v = 0.98 * speed;
+
+  if (distance < 0.5 * COLLISION_DISTANCE)
+  {
+    v = speed * 0.85;
+  }
+  else if (distance < 0.80 * COLLISION_DISTANCE)
+  {
+    v = speed * 0.90;
+  }
+  else if (distance < COLLISION_DISTANCE)
+  {
+    v = speed * 0.93;
+  }
+  else if (distance < BUFFER_DISTANCE)
+  {
+    v = speed * 0.95;
+  }
+
+  return std::max(v, car.get_previous_s()[1] * 0.80);
+}
+
+double Planner::overtake(Vehicle& car, double distance, double curr_lane_speed, double target_lane_speed)
+{
+  double v = car.get_previous_s()[1];
+
+  if (distance < BUFFER_DISTANCE)
+  {
+    v = std::min(0.50 * (curr_lane_speed + target_lane_speed), SPEED_LIMIT);
+  }
+
+  return v;
+}
+
+// Start state action
+void Planner::start(Road& road, Vehicle& car)
+{
+  double s = car.get_s();
+  double d = car.get_d();
+  double v = car.get_v();
+  std::cout << "-------------------------------------------------" << std::endl;
   std::cout << "[action] start" << std::endl;
-  std::cout << "(s: " << car.get_s() << " d: " << car.get_d() << " v: " << car.get_v() << ")" << std::endl;
+  std::cout << "(s: " << s << " d: " << d << " v: " << v << ")" << std::endl;
 
   this->n = START_MULTIPLIER * TRAJECTORY_POINTS;
-  double target_v = SPEED_LIMIT / 2.2;
+  double front_v = road.get_front_vehicle_speed(car);
+  double target_v = std::min(front_v, SPEED_LIMIT / 2.2);
   double target_s = car.get_s() + n * DELTA_T * target_v;
 
   this->start_s = {car.get_s(), car.get_v(), 0.0};
   this->end_s= {target_s, target_v, 0.0};
-  this->start_d = {get_lane_center_d(car.lane()), 0.0, 0.0};
-  this->end_d = {get_lane_center_d(car.lane()), 0.0, 0.0};
+  this->start_d = {Lane::get_lane_center_d(car.lane()), 0.0, 0.0};
+  this->end_d = {Lane::get_lane_center_d(car.lane()), 0.0, 0.0};
 
   car.set_previous_s(this->end_s);
   car.set_previous_d(this->end_d);
 
-  LANE curr_lane = car.lane();
-  LANE target_lane = car.lane();
+  unsigned int curr_lane = car.lane();
+  unsigned int target_lane = car.lane();
   this->update_state(curr_lane, target_lane);
 }
 
 // Keep lane action
-void Planner::keep_lane(Vehicle& car)
+void Planner::keep_lane(Road& road, Vehicle& car)
 {
-  std::cout << "[action] keep lane: " << lane_to_string(car.lane()) << std::endl;
-  std::cout << "(s: " << car.get_s() << " d: " << car.get_d() << " v: " << car.get_v() << ")" << std::endl;
+  double s = car.get_s();
+  double d = car.get_d();
+  double v = car.get_v();
+  std::cout << "-------------------------------------------------" << std::endl;
+  std::cout << "[action] keep lane: " << Lane::lane_to_string(car.lane()) << std::endl;
+  std::cout << "(s: " << s << " d: " << d << " v: " << v << ")" << std::endl;
 
   this->n = KEEP_LANE_MULTIPLIER * TRAJECTORY_POINTS;
-  double target_v = std::min(car.get_previous_s()[1] * 1.20, SPEED_LIMIT);
+  double front_v = road.get_front_vehicle_speed(car);
+  double front_distance = road.get_front_vehicle_distance(car);
+  double target_v = acceleration(car, front_distance, front_v);
   double target_s = car.get_previous_s()[0] + n * DELTA_T * target_v;
-  double target_d = get_lane_center_d(car.get_previous_d()[0]);
+  double target_d = Lane::get_lane_center_d(car.get_previous_d()[0]);
 
   this->start_s = {car.get_previous_s()[0], car.get_previous_s()[1], car.get_previous_s()[2]};
   this->end_s = {target_s, target_v, 0.0};
-  this->start_d = {get_lane_center_d(car.get_previous_d()[0]), 0.0, 0.0};
+  this->start_d = {Lane::get_lane_center_d(car.get_previous_d()[0]), 0.0, 0.0};
   this->end_d = {target_d, 0.0, 0.0};
 
   car.set_previous_s(this->end_s);
   car.set_previous_d(this->end_d);
 
-  LANE curr_lane = get_lane(car.get_previous_d()[0]);
-  LANE target_lane = get_lane(car.get_previous_d()[0]);
+  unsigned int curr_lane = Lane::get_lane(car.get_previous_d()[0]);
+  unsigned int target_lane = Lane::get_lane(car.get_previous_d()[0]);
   this->update_state(curr_lane, target_lane);
 }
 
 // Slow down action
-void Planner::slow_down(Vehicle& car){
+void Planner::slow_down(Road& road, Vehicle& car)
+{
+  double s = car.get_s();
+  double d = car.get_d();
+  double v = car.get_v();
+  std::cout << "-------------------------------------------------" << std::endl;
   std::cout << "[action] slow down: " << car.get_v() << std::endl;
-  std::cout << "(s: " << car.get_s() << " d: " << car.get_d() << " v: " << car.get_v() << ")" << std::endl;
+  std::cout << "(s: " << s << " d: " << d << " v: " << v << ")" << std::endl;
 
   this->n = SLOW_DOWN_MULTIPLIER * TRAJECTORY_POINTS;
   this->recompute_trajectory = true;
-  double target_v = std::max(car.get_previous_s()[1] * 0.90, SPEED_LIMIT / 2.0);
+  double front_v = road.get_front_vehicle_speed(car);
+  double front_distance = road.get_front_vehicle_distance(car);
+  double target_v =  brake(car, front_distance, front_v);
   double target_s = car.get_previous_s()[0] + n * DELTA_T * target_v;
-  double target_d = get_lane_center_d(car.get_previous_d()[0]);
+  double target_d = Lane::get_lane_center_d(car.get_previous_d()[0]);
 
   this->start_s = {car.get_previous_s()[0], car.get_previous_s()[1], car.get_previous_s()[2]};
   this->end_s = {target_s, target_v, 0.0};
-  this->start_d = {get_lane_center_d(car.get_previous_d()[0]), 0.0, 0.0};
+  this->start_d = {Lane::get_lane_center_d(car.get_previous_d()[0]), 0.0, 0.0};
   this->end_d = {target_d, 0.0, 0.0};
 
   car.set_previous_s(this->end_s);
   car.set_previous_d(this->end_d);
 
-  LANE curr_lane = get_lane(car.get_previous_d()[0]);
-  LANE target_lane = get_lane(car.get_previous_d()[0]);
+  unsigned int curr_lane = Lane::get_lane(car.get_previous_d()[0]);
+  unsigned int target_lane = Lane::get_lane(car.get_previous_d()[0]);
   this->update_state(curr_lane, target_lane);
 }
 
 // Change lane action
-void Planner::change_lane(Vehicle& car, LANE new_lane){
-  std::cout << "[action] change lane: " << lane_to_string(car.lane());
-  std::cout << " => " << lane_to_string(new_lane) << std::endl;
-  std::cout << "(s: " << car.get_s() << " d: " << car.get_d() << " v: " << car.get_v() << ")" << std::endl;
+void Planner::change_lane(Road& road, Vehicle& car, unsigned int new_lane)
+{
+  double s = car.get_s();
+  double d = car.get_d();
+  double v = car.get_v();
+  std::cout << "-------------------------------------------------" << std::endl;
+  std::cout << "[action] change lane: " << Lane::lane_to_string(car.lane());
+  std::cout << " => " << Lane::lane_to_string(new_lane) << std::endl;
+  std::cout << "(s: " << s << " d: " << d << " v: " << v << ")" << std::endl;
 
   this->n = CHANGE_LANE_MULTIPLIER * TRAJECTORY_POINTS;
   this->recompute_trajectory = true;
-  double target_v = car.get_previous_s()[1];
+  double front_v = road.get_front_vehicle_speed(car);
+  double front_distance = road.get_front_vehicle_distance(car);
+  double next_lane_v = road.get_front_vehicle_speed(car, new_lane);
+  double target_v = overtake(car, front_distance, front_v, next_lane_v);
   double target_s = car.get_previous_s()[0] + n * DELTA_T * target_v;
-  double target_d = get_lane_center_d(new_lane);
+  double target_d = Lane::get_lane_center_d(new_lane);
 
   this->start_s = {car.get_previous_s()[0], car.get_previous_s()[1], car.get_previous_s()[2]};
   this->end_s = {target_s, target_v, 0.0};
-  this->start_d = {get_lane_center_d(car.get_previous_d()[0]), 0.0, 0.0};
+  this->start_d = {Lane::get_lane_center_d(car.get_previous_d()[0]), 0.0, 0.0};
   this->end_d = {target_d, 0.0, 0.0};
 
   car.set_previous_s(this->end_s);
   car.set_previous_d(this->end_d);
 
-  LANE curr_lane = get_lane(car.get_previous_d()[0]);
-  LANE target_lane = get_lane(target_d);
+  unsigned int curr_lane = Lane::get_lane(car.get_previous_d()[0]);
+  unsigned int target_lane = Lane::get_lane(target_d);
   this->update_state(curr_lane, target_lane);
 }
 
 // Update status given the current state and the target lane
-void Planner::update_state(LANE curr_lane, LANE target_lane)
+void Planner::update_state(unsigned int curr_lane, unsigned int target_lane)
 {
   if (curr_lane == target_lane)
   {
@@ -403,17 +404,17 @@ void Planner::update_state(LANE curr_lane, LANE target_lane)
   }
   else
   {
-    if(curr_lane == LANE::LEFT_LANE)
+    if(curr_lane == Lane::LEFT_LANE)
     {
       this->state = STATE::CHANGE_RIGHT_STATE;
     }
-    else if(curr_lane == LANE::RIGHT_LANE)
+    else if(curr_lane == Lane::RIGHT_LANE)
     {
       this->state = STATE::CHANGE_LEFT_STATE;
     }
     else
     {
-      if(target_lane == LANE::LEFT_LANE)
+      if(target_lane == Lane::LEFT_LANE)
       {
         this->state = STATE::CHANGE_LEFT_STATE;
       }

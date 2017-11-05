@@ -45,21 +45,21 @@ double Vehicle::get_d()
   return this->d;
 }
 
-LANE Vehicle::lane()
+unsigned int Vehicle::lane()
 {
-  LANE lane;
+  unsigned int lane;
 
   if (this->d < 4.0)
   {
-    lane = LANE::LEFT_LANE;
+    lane = Lane::LEFT_LANE;
   }
   else if ((this->d >= 4.0) && (this->d < 8.0))
   {
-    lane = LANE::CENTER_LANE;
+    lane = Lane::CENTER_LANE;
   }
   else
   {
-    lane = LANE::RIGHT_LANE;
+    lane = Lane::RIGHT_LANE;
   }
 
   return lane;

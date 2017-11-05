@@ -8,6 +8,7 @@ set(CXX_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
 
 set(sources
+    src/lane.cpp
     src/main.cpp
     src/map.cpp
     src/planner.cpp
