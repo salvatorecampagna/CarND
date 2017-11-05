@@ -199,7 +199,7 @@ void Planner::new_trajectory(Map& map, Road& road, Vehicle& car, std::vector<std
 double Planner::acceleration(Vehicle& car, double distance, double speed)
 {
   double car_v = car.get_v();
-  double a = 1.04;
+  double a = 1.03;
 
   if (car_v > 45)
   {
