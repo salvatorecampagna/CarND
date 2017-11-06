@@ -3,7 +3,7 @@
 
 const double MAX_D = 11.90; // meters
 const double MAX_S = 6914.14925765991; // meters
-const double SPEED_LIMIT = 21.2; // meters / second
+const double SPEED_LIMIT = 20.5; // meters / second
 const double DELTA_T = 0.02; // seconds
 const double KEEP_LANE_MULTIPLIER = 2;
 const double SLOW_DOWN_MULTIPLIER = 6; //10
