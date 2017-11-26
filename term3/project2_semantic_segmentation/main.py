@@ -245,8 +245,8 @@ def run(data_dir='./data', runs_dir='./runs'):
         helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
         
         # OPTIONAL: Apply the trained model to a video
-        video_file = 'driving_video.mp4'
-        gen_test_output_video(sess, logits, keep_prob, input_image, video_file, image_shape)
+        #video_file = 'driving_video.mp4'
+        #gen_test_output_video(sess, logits, keep_prob, input_image, video_file, image_shape)
 
 
 
