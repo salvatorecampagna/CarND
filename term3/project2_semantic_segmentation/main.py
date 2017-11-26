@@ -254,8 +254,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process command line arguments')
     parser.add_argument('--data-dir', type=str, default='./data', required=False, help='Training data drectory')
     parser.add_argument('--runs-dir', type=str, default='./runs', required=False, help='Output directory')
-    args = parser.parse()
+    args = parser.parse_args()
 
-    print('Data directory: {0}'.format(data_dir))
-    print('Output directory: {0}'.format(runs_dir))
+    print('Data directory: {0}'.format(args.data_dir))
+    print('Output directory: {0}'.format(args.runs_dir))
     run(data_dir=args.data_dir, runs_dir=args.runs_dir)
