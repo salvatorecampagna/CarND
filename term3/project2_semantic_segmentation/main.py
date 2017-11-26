@@ -21,7 +21,7 @@ else:
 
 
 def print_duration(td):
-    print('Duration days: {0} hours: {1} mins: {2}'.format(td.days, td.seconds//3600, (td.seconds//60)%60))
+    print('Duration days: {0} hours: {1} mins: {2}'.format(td.days, td.seconds//3600, (td.seconds//60) % 60))
 
 
 def load_vgg(sess, vgg_path):
@@ -64,38 +64,38 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     """
 
     # TODO: include skip layers
-    conv_1x1 = tf.layers.conv2d(vgg_layer7_out, num_classes, 1, strides=(1,1), padding='SAME',
-        kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
-        kernel_initializer= tf.random_normal_initializer(stddev=0.01))
-    
+    conv_1x1 = tf.layers.conv2d(vgg_layer7_out, num_classes, 1, strides=(1, 1), padding='SAME',
+                                kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
+                                kernel_initializer=tf.random_normal_initializer(stddev=0.01))
+
     # upsample x2
-    layer4 = tf.layers.conv2d_transpose(conv_1x1, num_classes, 4, strides=(2,2), padding='SAME',
-        kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
-        kernel_initializer= tf.random_normal_initializer(stddev=0.01))
+    layer4 = tf.layers.conv2d_transpose(conv_1x1, num_classes, 4, strides=(2, 2), padding='SAME',
+                                        kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
+                                        kernel_initializer=tf.random_normal_initializer(stddev=0.01))
     # make sure the shapes are the same!
     # 1x1 convolution of vgg layer 4
-    layer4_conv_1x1 = tf.layers.conv2d(vgg_layer4_out, num_classes, 1, strides=(1,1), padding='SAME',
-        kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
-        kernel_initializer= tf.random_normal_initializer(stddev=0.01))
+    layer4_conv_1x1 = tf.layers.conv2d(vgg_layer4_out, num_classes, 1, strides=(1, 1), padding='SAME',
+                                       kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
+                                       kernel_initializer=tf.random_normal_initializer(stddev=0.01))
     # skip connection (element-wise addition)
     layer4 = tf.add(layer4, layer4_conv_1x1)
-    
+
     # upsample x2
-    layer3 = tf.layers.conv2d_transpose(layer4, num_classes, 4, strides=(2,2), padding='SAME',
-        kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
-        kernel_initializer= tf.random_normal_initializer(stddev=0.01))
+    layer3 = tf.layers.conv2d_transpose(layer4, num_classes, 4, strides=(2, 2), padding='SAME',
+                                        kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
+                                        kernel_initializer=tf.random_normal_initializer(stddev=0.01))
     # 1x1 convolution of vgg layer 3
-    layer3_conv_1x1 = tf.layers.conv2d(vgg_layer3_out, num_classes, 1, strides=(1,1), padding='SAME',
-        kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
-        kernel_initializer= tf.random_normal_initializer(stddev=0.01))
+    layer3_conv_1x1 = tf.layers.conv2d(vgg_layer3_out, num_classes, 1, strides=(1, 1), padding='SAME',
+                                       kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
+                                       kernel_initializer=tf.random_normal_initializer(stddev=0.01))
     # skip connection (element-wise addition)
     layer3 = tf.add(layer3, layer3_conv_1x1)
-    
+
     # upsample x8
-    nn_last_layer = tf.layers.conv2d_transpose(layer3, num_classes, 16, strides=(8,8), padding='SAME',
-        kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
-        kernel_initializer= tf.random_normal_initializer(stddev=0.01))
-    
+    nn_last_layer = tf.layers.conv2d_transpose(layer3, num_classes, 16, strides=(8, 8), padding='SAME',
+                                               kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
+                                               kernel_initializer=tf.random_normal_initializer(stddev=0.01))
+
     return nn_last_layer
 tests.test_layers(layers)
 
@@ -111,7 +111,7 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     """
 
     logits = tf.reshape(nn_last_layer, (-1, num_classes))
-    labels = tf.reshape(correct_label, (-1,num_classes))
+    labels = tf.reshape(correct_label, (-1, num_classes))
 
     # Loss function
     cross_entropy_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=labels))
@@ -147,7 +147,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
         start_time = datetime.datetime.now()
         print('Start: {0}'.format(start_time.strftime('%Y-%m-%d %H:%M:%S')))
         for (image, label) in get_batches_fn(batch_size):
-            _, loss = sess.run([train_op, cross_entropy_loss], 
+            _, loss = sess.run([train_op, cross_entropy_loss],
                                feed_dict={
                                 input_image: image,
                                 correct_label: label,
@@ -195,12 +195,12 @@ def run(epochs, batch_size, data_path='./data', runs_path='./output'):
 
         # TODO: Train NN using the train_nn function
         train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image,
-            correct_label, keep_prob, learning_rate)
+                 correct_label, keep_prob, learning_rate)
 
         # TODO: Save inference data using helper.save_inference_samples
         #  helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
         helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
-        
+
         # OPTIONAL: Apply the trained model to a video
 
 
