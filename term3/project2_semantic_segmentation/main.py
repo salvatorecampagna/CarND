@@ -162,51 +162,11 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
 tests.test_train_nn(train_nn)
 
 
-def gen_test_output_video(sess, logits, keep_prob, image_pl, video_file, image_shape):
-    """
-    Generate test output video using the test images
-    :param sess: TF session
-    :param logits: TF Tensor for the logits
-    :param keep_prob: TF Placeholder for the dropout keep robability
-    :param image_pl: TF Placeholder for the image placeholder
-    :param video_file: MP4 video file
-    :param image_shape: Tuple - Shape of image
-    :return: Output for for each test image
-    """
-    capture = cv2.VideoCapture(video_file)
-    counter = 0
-
-    while True:
-        ret, frame = capture.read()
-        if frame is None:
-            break
-        image = scipy.misc.imresize(frame, image_shape)
-
-        im_softmax = sess.run(
-            [tf.nn.softmax(logits)],
-            {keep_prob: 1.0, image_pl: [image]})
-        im_softmax = im_softmax[0][:, 1].reshape(image_shape[0], image_shape[1])
-        segmentation = (im_softmax > 0.5).reshape(image_shape[0], image_shape[1], 1)
-        mask = np.dot(segmentation, np.array([[0, 255, 0, 127]]))
-        mask_full = scipy.misc.imresize(mask, frame.shape)
-        mask_full = scipy.misc.toimage(mask_full, mode='RGBA')
-        mask = scipy.misc.toimage(mask, mode='RGBA')
-        street_im = scipy.misc.toimage(image)
-        street_im.paste(mask, box=None, mask=mask)
-
-        street_im_full = scipy.misc.toimage(frame)
-        street_im_full.paste(mask_full, box=None, mask=mask_full)
-        cv2.imwrite('video_images/image{0:08d}.jpg'.format(counter), np.array(street_im_full))
-        counter += 1
-
-    # Release the capture
-    capture.release()
-    cv2.destroyAllWindows()
-
-
-def run(data_dir='./data', runs_dir='./runs'):
+def run(epochs, batch_size, data_path='./data', runs_path='./output'):
     num_classes = 2
     image_shape = (160, 576)
+    data_dir = data_path
+    runs_dir = runs_path
     tests.test_for_kitti_dataset(data_dir)
 
     # Download pretrained VGG model
@@ -225,9 +185,6 @@ def run(data_dir='./data', runs_dir='./runs'):
         # OPTIONAL: Augment Images for better results
         #  https://datascience.stackexchange.com/questions/5224/how-to-prepare-augment-images-for-neural-network
 
-        epochs = 10
-        batch_size = 25
-
         correct_label = tf.placeholder(tf.int32, [None, None, None, num_classes], name='correct_label')
         learning_rate = tf.placeholder(tf.float32, name='learning_rate')
 
@@ -245,17 +202,30 @@ def run(data_dir='./data', runs_dir='./runs'):
         helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
         
         # OPTIONAL: Apply the trained model to a video
-        #video_file = 'driving_video.mp4'
-        #gen_test_output_video(sess, logits, keep_prob, input_image, video_file, image_shape)
 
+
+def parse_command_line_arguments():
+    parser = argparse.ArgumentParser(description='Process command line arguments')
+
+    parser.add_argument('--epochs', type=int, required=True, help='Training epochs')
+    parser.add_argument('--batch-size', type=int, required=True, help='Batch size')
+    parser.add_argument('--data-dir', type=str, default='./data', required=False, help='Training data drectory')
+    parser.add_argument('--runs-dir', type=str, default='./output', required=False, help='Image output directory')
+
+    return parser.parse_args()
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Process command line arguments')
-    parser.add_argument('--data-dir', type=str, default='./data', required=False, help='Training data drectory')
-    parser.add_argument('--runs-dir', type=str, default='./runs', required=False, help='Output directory')
-    args = parser.parse_args()
+    args = parse_command_line_arguments()
 
+    if args.epochs <= 0:
+        raise ValueError('Epochs value must be positive: {0}'.format(args.epochs))
+
+    if args.batch_size <= 0:
+        raise ValueError('Batch size must be positive: {0}'.format(args.batch_size))
+
+    print('Epochs: {0}'.format(args.epochs))
+    print('Batch size: {0}'.format(args.batch_size))
     print('Data directory: {0}'.format(args.data_dir))
     print('Output directory: {0}'.format(args.runs_dir))
-    run(data_dir=args.data_dir, runs_dir=args.runs_dir)
+    run(epochs=args.epochs, batch_size=args.batch_size, data_path=args.data_dir, runs_path=args.runs_dir)
