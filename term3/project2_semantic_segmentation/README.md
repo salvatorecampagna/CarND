@@ -2,7 +2,6 @@
 Self-Driving Car Engineer Nanodegree Program
 
 
-[sample_03]: ./images/umm_000003.png "Sample 03"
 [sample_13]: ./images/umm_000013.png "Sample 13"
 [sample_15]: ./images/umm_000015.png "Sample 15"
 [sample_29]: ./images/umm_000029.png "Sample 29"
@@ -60,7 +59,6 @@ After 10 epochs the cross-entropy loss is in the range `[0.08 - 0.05]`. After 30
 
 A list of some sample images follws as they are produced by the FCN, with the segmentation class overlaid on top of the original image in green.
 
-![alt_text][sample_03]
 ![alt_text][sample_13]
 ![alt_text][sample_15]
 ![alt_text][sample_29]
