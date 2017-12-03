@@ -12,7 +12,6 @@ Self-Driving Car Engineer Nanodegree Program
 
 
 ## Background
----
 
 In this project a Fully Convolutional Network (FCN) is used for Semantic Segmentation. Semantic Segmentation is the task of partitioning an image into semantically meaningful parts, and to classify each part into one of the pre-determined classes. The FCN used in this project
 can partition images identifying pixels belonging to the road or not. As a result the network
@@ -20,7 +19,6 @@ receives images of any size as input and produces images of the same size as out
 pixels representing roads.
 
 ## FCN Architecture
----
 
 By the architectural point of view a Fully Convolutional Network is comprised of two parts: an
 `encoder` and a `decoder`. The encoder is made by a series of convolutional layers whose goal is to extract features from an image. The decoder up-scales the output of the encoder in such a way to
@@ -38,12 +36,10 @@ To further improve the semantic segmentation performance `skip connections` are 
 the network to use information from multiple resolution scales.
 
 ## FCN Optimizer
----
 
 The optimizer used to train (fine tune) the network is the `Adam optimizer`, which is optimizing the `cross-entropy loss` function to classify each pixel as road or not road.
 
 ## FCN Training
----
 
 To train the FCN network the Kitti Road dataset is used [Kitti Road dataset](http://www.cvlibs.net/datasets/kitti/eval_road.php) from [here](http://www.cvlibs.net/download.php?file=data_road.zip).  
 Training this type of network is quite time consuming and demanding in terms of computational
@@ -69,7 +65,6 @@ After 10 epochs the cross-entropy loss is in the range `[0.08 - 0.05]`. After 30
 
 
 ## Sample images
----
 
 A list of some sample images follws as they are produced by the FCN, with the segmentation class overlaid on top of the original image in green.
 
