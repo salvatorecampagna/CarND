@@ -2,13 +2,13 @@
 Self-Driving Car Engineer Nanodegree Program
 
 
-[sample_03]: ./images/um_000003.png "Sample 03"
-[sample_13]: ./images/um_000013.png "Sample 13"
-[sample_15]: ./images/um_000015.png "Sample 15"
-[sample_29]: ./images/um_000029.png "Sample 29"
-[sample_38]: ./images/um_000038.png "Sample 38"
-[sample_49]: ./images/um_000049.png "Sample 49"
-[sample_63]: ./images/um_000063.png "Sample 63"
+[sample_03]: ./images/umm_000003.png "Sample 03"
+[sample_13]: ./images/umm_000013.png "Sample 13"
+[sample_15]: ./images/umm_000015.png "Sample 15"
+[sample_29]: ./images/umm_000029.png "Sample 29"
+[sample_39]: ./images/umm_000038.png "Sample 39"
+[sample_49]: ./images/umm_000049.png "Sample 49"
+[sample_63]: ./images/umm_000063.png "Sample 63"
 
 
 ## Background
@@ -64,6 +64,6 @@ A list of some sample images follws as they are produced by the FCN, with the se
 ![alt_text][sample_13]
 ![alt_text][sample_15]
 ![alt_text][sample_29]
-![alt_text][sample_38]
+![alt_text][sample_39]
 ![alt_text][sample_49]
 ![alt_text][sample_63]
