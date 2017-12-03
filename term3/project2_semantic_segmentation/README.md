@@ -13,7 +13,7 @@ Self-Driving Car Engineer Nanodegree Program
 
 ## Background
 
-In this project a Fully Convolutional Network (FCN) is used for Semantic Segmentation. Semantic Segmentation is the task of partitioning an image into semantically meaningful parts, and to classify each part into one of the pre-determined classes. The FCN used in this project
+In this project a **Fully Convolutional Network (FCN)** is used for **Semantic Segmentation**. Semantic Segmentation is the task of partitioning an image into semantically meaningful parts, and to classify each part into one of the pre-determined classes. The FCN used in this project
 can partition images identifying pixels belonging to the road or not. As a result the network
 receives images of any size as input and produces images of the same size as output identifying
 pixels representing roads.
@@ -29,7 +29,7 @@ For this reason it has been modified to remove the upper fully connected layers
 and preserving lower convolutional layers and their weights. This way the encoder preserves its
 feature extraction capabilities.
 The output of the last layer of VGG-16 is taken as input to the decoder part. At this point `1x1
-convolutions` are used to replace the fully connected layer and preserve spatial information in
+convolutions` are used to replace the fully connected layers and preserve spatial information in
 the image. Following 1x1 convolutions is a sequence of `transposed convolutions` whose purpose is
 to up-scale the image to the original size.
 To further improve the semantic segmentation performance `skip connections` are included allowing
@@ -41,7 +41,7 @@ The optimizer used to train (fine tune) the network is the `Adam optimizer`, whi
 
 ## FCN Training
 
-To train the FCN network the Kitti Road dataset is used [Kitti Road dataset](http://www.cvlibs.net/datasets/kitti/eval_road.php) from [here](http://www.cvlibs.net/download.php?file=data_road.zip).  
+To train the FCN network the [Kitti Road dataset](http://www.cvlibs.net/datasets/kitti/eval_road.php) is used from [here](http://www.cvlibs.net/download.php?file=data_road.zip).  
 Training this type of network is quite time consuming and demanding in terms of computational
 resources. As a result the training has taken place on a machine with a GPU.  
 
@@ -52,14 +52,6 @@ The hyperparameters used for training the FCN are the following:
 capability.
 * Batch size (`batch_size`): 5 images per batch of training.
 * Learning rate (`learning_rate`): 0.00005.
-
-Run the following command to run the project:
-```
-python main.py
-```
-
-This will start training the network using the Kitti Road dataset and then will produce a set of
-images resulting from the segmentation task in a sub-directory.
 
 After 10 epochs the cross-entropy loss is in the range `[0.08 - 0.05]`. After 30 epochs is in the range `[0.03 - 0.02]` while at the end of epoch 50 it is in the range `[0.02 - 0.01]`.
 
